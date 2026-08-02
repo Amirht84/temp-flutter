@@ -1,7 +1,20 @@
 import 'package:flutter/material.dart';
 
+
+// static const secondBackground = Color(0xFFFAF7F2);
+// static const secondBackground = Color(0xFFF8F1E7);
+// static const secondBackground = Color(0xFFFFF8EE);
+
+// static const secondBackground = Color(0xFFEFF1F3); ..
+// static const secondBackground = Color(0xFFF1F2F0); ..
+
+// static const secondBackground = Color(0xFFEAF2EE); ..
+// static const secondBackground = Color(0xFFE8F3EC);
+
+// static const secondBackground = Color(0xFFEFF4F7);
 abstract final class Palet {
   static const backGround = Color(0xFFF7F8FA);
+  static const secondBackground = Color(0xFFE8F3EC);
   static const cards = Color(0xFFFFFFFF);
   static const secondaryPanels = Color(0xFFF2F4F7);
   static const border = Color(0xFFDDE2E8);
@@ -16,4 +29,28 @@ abstract final class Palet {
   static const warning = Color(0xFFF5A623);
   static const error = Color(0xFFE5484D);
   static const info = Color(0xFF3B82F6);
+}
+
+abstract final class Values {
+  ////////////BODY////////////
+  static const bodyPadding = 10.0;
+  ////////////SLIDERS////////////
+  static const sliderTitleSize = 15.0;
+  static const sliderValueSize = 34.0;
+  static const sliderFactor = 0.9;
+  static const sliderPadding = 10.0;
+  static const sliderBoundOffset = 25.0;
+
+  ////////////BUTTONS////////////
+  static const buttonCurve = 14.0;
+  static const buttonFontSize = 18.0;
+  static const buttonInnerSpacing = 8.0;
+  static const buttonHeight = 50.0;
+  static const buttonWidthFactor = 0.9;
+  static const buttonPadding = 5.0;
+
+  ////////////DIVIDERS////////////
+  static const dividerSize = 30.0;
+  static const dividerThickness = 1.0;
+  static const dividerFactor = 0.9;
 }
