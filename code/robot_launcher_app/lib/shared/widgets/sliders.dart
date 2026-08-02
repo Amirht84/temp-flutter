@@ -1,26 +1,27 @@
 import 'package:flutter/material.dart';
 import 'package:robot_launcher_app/shared/constants/colors.dart';
 
-class HorizonSlider extends StatefulWidget {
-  const HorizonSlider(
-    {
-      super.key,
-      required this.minValue,
-      required this.maxValue,
-      required this.title,
-      this.unit = ""
-    });
+class FlexibleSlider extends StatefulWidget {
+  const FlexibleSlider({
+    super.key,
+    required this.minValue,
+    required this.maxValue,
+    required this.title,
+    this.isVertical = false,
+    this.unit = ""
+  });
 
   final double minValue;
   final double maxValue;
   final String title;
+  final bool isVertical;
   final String unit;
   @override
-  State<HorizonSlider> createState() => _HorizonSliderState();
-
+  State<FlexibleSlider> createState() => _FlexibleSliderState();
 }
 
-class _HorizonSliderState extends State<HorizonSlider> {
+
+class _FlexibleSliderState extends State<FlexibleSlider> {
 
   late double value;
   @override
@@ -37,136 +38,114 @@ class _HorizonSliderState extends State<HorizonSlider> {
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Padding(
-            padding: EdgeInsets.symmetric(horizontal: 20),
-            child: Text(
+      
+          Text(
               widget.title,
               style: TextStyle(
-                fontSize: 26,
+                fontSize: Values.sliderTitleSize,
                 fontWeight: FontWeight.bold)
             ),
-          ),
           Text(
-            value.toInt().toString() + widget.unit,
+            '${value.toInt()}${widget.unit}',
             style: TextStyle(
-              fontSize: 50,
+              fontSize: Values.sliderValueSize,
               fontWeight: FontWeight.bold,
             )
           ),
-          Slider(
+          _ExpandedOrNot(
+            isExpanded: widget.isVertical,
+          child: _Slider(
+            minValue: widget.minValue,
+            maxValue: widget.maxValue,
             value: value,
-            min: widget.minValue,
-            max: widget.maxValue,
-            activeColor: Palet.primaryAccent,
+            isVertical: widget.isVertical,
             onChanged: (newValue) {
-              setState((){
+              setState(() {
                 value = newValue;
               });
-            }
-          ),
-          Padding(
-            padding: EdgeInsets.symmetric(horizontal: 20),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(widget.minValue.toInt().toString() + widget.unit),
-                Text(widget.maxValue.toInt().toString() + widget.unit),
-              ],
-            ),
-          ),
+            },
+            unit: widget.unit
+          ),)
         ],
       )
     );
-  }
+  }  
 }
 
-class VerticSlider extends StatefulWidget {
-  const VerticSlider(
-    {
-      super.key,
-      required this.minValue,
-      required this.maxValue,
-      required this.title,
-      this.unit = "",
-    });
-
+class _Slider extends StatelessWidget {
+  const _Slider ({
+    required this.minValue,
+    required this.maxValue,
+    required this.onChanged,
+    required this.value,
+    this.unit = "",
+    this.isVertical = false
+  });
   final double minValue;
   final double maxValue;
-  final String title;
   final String unit;
-  @override
-  State<VerticSlider> createState() => _VerticSliderState();
-}
-
-class _VerticSliderState extends State<VerticSlider> {
-  late double value;
-
-  @override void initState() {
-    super.initState();
-    value = (widget.maxValue + widget.minValue) / 2;
-  }
-
+  final double value;
+  final ValueChanged<double> onChanged;
+  final bool isVertical;
+  List<Text> get _children => [
+    Text('${minValue.toInt()}$unit'),
+    Text('${maxValue.toInt()}$unit'),
+  ];
   @override
   Widget build(BuildContext context) {
-    return Center(
 
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Text(
-            widget.title,
-            style: TextStyle(
-              fontSize: 26,
-              fontWeight: FontWeight.bold
-            )
-          ),
-          Text(
-            value.toInt().toString() + widget.unit,
-            style: TextStyle(
-              fontSize: 50,
-              fontWeight: FontWeight.bold,
-            )
-          ),
-          Expanded(
-            child: Stack(
-              alignment: Alignment.center,
-              children: [
-                RotatedBox(
-                  quarterTurns: 3,
-                  child: Slider(
-                    min: widget.minValue,
-                    max: widget.maxValue,
-                    value: value,
-                    activeColor: Palet.primaryAccent,
-                    onChanged: (newValue) {
-                      setState(() {
-                        value = newValue;
-                      });
-                    },                
-                  ),
-                ),
+    return FractionallySizedBox(
+      widthFactor: isVertical ? null : Values.sliderFactor,
+      heightFactor: isVertical ? Values.sliderFactor : null,
 
-                Padding(
-                  padding: EdgeInsets.symmetric(vertical: 20),
-                  child: Transform.translate(
-                    offset: const Offset(40, 0),
-                    child: Column(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(widget.maxValue.toInt().toString() + widget.unit),
-                      Text(widget.minValue.toInt().toString() + widget.unit),
-                    ],),
-                  )
-                )
-
-
-              ],
+      child: Padding(
+        padding: isVertical 
+          ? EdgeInsets.only(
+              bottom: Values.sliderPadding
+            ) 
+          : EdgeInsets.only(
+              top: Values.sliderPadding,
+              bottom: Values.sliderBoundOffset,
+              left: Values.sliderPadding,
+              right: Values.sliderPadding
             ),
+        child: Stack(
+        alignment: Alignment.center,
+        children:[
+          RotatedBox(
+            quarterTurns: isVertical ? 3 : 0,
+            child: Slider(
+              padding: EdgeInsets.zero,
+              value: value,
+              min: minValue,
+              max: maxValue,
+              activeColor: Palet.primaryAccent,
+              onChanged: onChanged,
+            ),
+          ),
+          Transform.translate(
+            
+            offset: isVertical ? Offset(Values.sliderBoundOffset, 0) : Offset(0, Values.sliderBoundOffset),
+            child: isVertical 
+              ? Column(children: _children, mainAxisAlignment: MainAxisAlignment.spaceBetween, crossAxisAlignment: CrossAxisAlignment.start,)
+              : Row(children: _children,mainAxisAlignment: MainAxisAlignment.spaceBetween,),
           )
         ],
-      )
+      ),)
     );
   }
+}
 
+class _ExpandedOrNot extends StatelessWidget {
+  const _ExpandedOrNot({
+    required this.child,
+    this.isExpanded = false,
+  });
+  final Widget child;
+  final bool isExpanded;
+
+  @override
+  Widget build(BuildContext _) {
+    return isExpanded ? Expanded(child: child) : child;
+  }
 }
