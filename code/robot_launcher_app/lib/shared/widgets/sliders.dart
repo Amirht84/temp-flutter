@@ -33,6 +33,20 @@ class _FlexibleSliderState extends State<FlexibleSlider> {
 
   @override
   Widget build(BuildContext context) {
+    final slider = _Slider(
+      minValue: widget.minValue,
+      maxValue: widget.maxValue,
+      value: value,
+      isVertical: widget.isVertical,
+      onChanged: (newValue) {
+        setState(() {
+          value = newValue;
+        });
+      },
+      unit: widget.unit
+    );
+
+
     return Center(
 
       child: Column(
@@ -52,20 +66,9 @@ class _FlexibleSliderState extends State<FlexibleSlider> {
               fontWeight: FontWeight.bold,
             )
           ),
-          _ExpandedOrNot(
-            isExpanded: widget.isVertical,
-          child: _Slider(
-            minValue: widget.minValue,
-            maxValue: widget.maxValue,
-            value: value,
-            isVertical: widget.isVertical,
-            onChanged: (newValue) {
-              setState(() {
-                value = newValue;
-              });
-            },
-            unit: widget.unit
-          ),)
+          widget.isVertical
+            ? Expanded(child: slider)
+            : slider,
         ],
       )
     );
@@ -87,10 +90,6 @@ class _Slider extends StatelessWidget {
   final double value;
   final ValueChanged<double> onChanged;
   final bool isVertical;
-  List<Text> get _children => [
-    Text('${minValue.toInt()}$unit'),
-    Text('${maxValue.toInt()}$unit'),
-  ];
   @override
   Widget build(BuildContext context) {
 
@@ -126,26 +125,19 @@ class _Slider extends StatelessWidget {
           Transform.translate(
             
             offset: isVertical ? Offset(Values.sliderBoundOffset, 0) : Offset(0, Values.sliderBoundOffset),
-            child: isVertical 
-              ? Column(children: _children, mainAxisAlignment: MainAxisAlignment.spaceBetween, crossAxisAlignment: CrossAxisAlignment.start,)
-              : Row(children: _children,mainAxisAlignment: MainAxisAlignment.spaceBetween,),
+            child: Flex(
+              verticalDirection: VerticalDirection.up,
+              direction: isVertical ? Axis.vertical : Axis.horizontal,
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text('${minValue.toInt()}$unit'),
+                Text('${maxValue.toInt()}$unit'),
+              ],
+            )
           )
         ],
       ),)
     );
-  }
-}
-
-class _ExpandedOrNot extends StatelessWidget {
-  const _ExpandedOrNot({
-    required this.child,
-    this.isExpanded = false,
-  });
-  final Widget child;
-  final bool isExpanded;
-
-  @override
-  Widget build(BuildContext _) {
-    return isExpanded ? Expanded(child: child) : child;
   }
 }
