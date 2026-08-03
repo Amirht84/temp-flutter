@@ -56,13 +56,13 @@ class _FlexibleSliderState extends State<FlexibleSlider> {
           Text(
               widget.title,
               style: TextStyle(
-                fontSize: Values.sliderTitleSize,
+                fontSize: Dimensions.sliderTitleSize,
                 fontWeight: FontWeight.bold)
             ),
           Text(
             '${value.toInt()}${widget.unit}',
             style: TextStyle(
-              fontSize: Values.sliderValueSize,
+              fontSize: Dimensions.sliderValueSize,
               fontWeight: FontWeight.bold,
             )
           ),
@@ -94,19 +94,19 @@ class _Slider extends StatelessWidget {
   Widget build(BuildContext context) {
 
     return FractionallySizedBox(
-      widthFactor: isVertical ? null : Values.sliderFactor,
-      heightFactor: isVertical ? Values.sliderFactor : null,
+      widthFactor: isVertical ? null : Dimensions.sliderFactor,
+      heightFactor: isVertical ? Dimensions.sliderFactor : null,
 
       child: Padding(
         padding: isVertical 
           ? EdgeInsets.only(
-              bottom: Values.sliderPadding
+              bottom: Dimensions.sliderPadding
             ) 
           : EdgeInsets.only(
-              top: Values.sliderPadding,
-              bottom: Values.sliderBoundOffset,
-              left: Values.sliderPadding,
-              right: Values.sliderPadding
+              top: Dimensions.sliderPadding,
+              bottom: Dimensions.sliderBoundOffset,
+              left: Dimensions.sliderPadding,
+              right: Dimensions.sliderPadding
             ),
         child: Stack(
         alignment: Alignment.center,
@@ -124,7 +124,7 @@ class _Slider extends StatelessWidget {
           ),
           Transform.translate(
             
-            offset: isVertical ? Offset(Values.sliderBoundOffset, 0) : Offset(0, Values.sliderBoundOffset),
+            offset: isVertical ? Offset(Dimensions.sliderBoundOffset, 0) : Offset(0, Dimensions.sliderBoundOffset),
             child: Flex(
               verticalDirection: VerticalDirection.up,
               direction: isVertical ? Axis.vertical : Axis.horizontal,

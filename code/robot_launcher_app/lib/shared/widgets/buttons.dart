@@ -16,35 +16,27 @@ class GreenButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: EdgeInsets.symmetric(vertical: Values.buttonPadding),
+      padding: EdgeInsets.symmetric(vertical: Dimensions.buttonPadding),
       child: FractionallySizedBox(
-      widthFactor: Values.buttonWidthFactor,
+      widthFactor: Dimensions.buttonWidthFactor,
       child: SizedBox(
-        height: Values.buttonHeight,
+        height: Dimensions.buttonHeight,
         child: ElevatedButton(
           style: ElevatedButton.styleFrom(
             backgroundColor: Palet.primaryAccent,
             textStyle: TextStyle(
               fontWeight: FontWeight.bold,
-              fontSize: Values.buttonFontSize,
+              fontSize: Dimensions.buttonFontSize,
             ),
             shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(Values.buttonCurve),
+              borderRadius: BorderRadius.circular(Dimensions.buttonCurve),
             ),
           ),
           onPressed: onPressed,
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              SvgPicture.asset(
-                iconPath,
-              ),
-              const SizedBox(width: Values.buttonInnerSpacing),
-              Text(
-                text,
-                style: TextStyle(color: Palet.primaryText),
-              ),
-            ],
+          child: _ButtonContext(
+            text: text,
+            iconPath: iconPath,
+            color: Palet.primaryText,
           ),
         ),
       ),
@@ -66,38 +58,61 @@ class RedButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: EdgeInsets.symmetric(vertical: Values.buttonPadding),
+      padding: EdgeInsets.symmetric(vertical: Dimensions.buttonPadding),
       child: FractionallySizedBox(
-      widthFactor: Values.buttonWidthFactor,
+      widthFactor: Dimensions.buttonWidthFactor,
       child: SizedBox(
-        height: Values.buttonHeight,
+        height: Dimensions.buttonHeight,
         child: ElevatedButton(
           style: ElevatedButton.styleFrom(
             backgroundColor: Palet.error,
             textStyle: TextStyle(
               fontWeight: FontWeight.bold,
-              fontSize: Values.buttonFontSize,
+              fontSize: Dimensions.buttonFontSize,
             ),
             shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(Values.buttonCurve),
+              borderRadius: BorderRadius.circular(Dimensions.buttonCurve),
             ),
           ),
           onPressed: onPressed,
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              SvgPicture.asset(
-                iconPath,
-              ),
-              const SizedBox(width: Values.buttonInnerSpacing),
-              Text(
-                text, 
-                style: TextStyle(color: Palet.secondaryPanels))
-            ],
-          ),
+          child: _ButtonContext(
+            text: text,
+            iconPath: iconPath, 
+            color: Palet.secondaryPanels
+          )
         )
       ),
     ),
+    );
+  }
+}
+
+class _ButtonContext extends StatelessWidget {
+  const _ButtonContext({
+    required this.text,
+    required this.iconPath,
+    required this.color,
+  });
+  final String text;
+  final String iconPath;
+  final Color color;
+
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      width: Dimensions.buttonContextSize,
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceAround,
+        children: [
+          SvgPicture.asset(
+            iconPath
+          ),
+          Text(
+            text,
+            style: TextStyle(color: color),
+          )
+        ],
+      ),
     );
   }
 }
@@ -119,10 +134,10 @@ class WhiteButton extends StatelessWidget {
         backgroundColor: Palet.error,
         textStyle: TextStyle(
           fontWeight: FontWeight.bold,
-          fontSize: Values.buttonFontSize,
+          fontSize: Dimensions.buttonFontSize,
         ),
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(Values.buttonCurve),
+          borderRadius: BorderRadius.circular(Dimensions.buttonCurve),
         ),
       ),
       onPressed: onPressed,
@@ -132,7 +147,7 @@ class WhiteButton extends StatelessWidget {
           SvgPicture.asset(
             iconPath,
           ),
-          const SizedBox(width: Values.buttonInnerSpacing),
+          const SizedBox(width: Dimensions.buttonContextSize),
           Text(
             text, 
             style: TextStyle(color: Palet.secondaryPanels))

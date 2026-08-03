@@ -31,7 +31,7 @@ abstract final class Palet {
   static const info = Color(0xFF3B82F6);
 }
 
-abstract final class Values {
+abstract final class Dimensions {
   ////////////BODY////////////
   static const bodyPadding = 10.0;
   ////////////SLIDERS////////////
@@ -44,7 +44,7 @@ abstract final class Values {
   ////////////BUTTONS////////////
   static const buttonCurve = 14.0;
   static const buttonFontSize = 18.0;
-  static const buttonInnerSpacing = 8.0;
+  static const buttonContextSize = 100.0;
   static const buttonHeight = 50.0;
   static const buttonWidthFactor = 0.9;
   static const buttonPadding = 5.0;

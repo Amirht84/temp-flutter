@@ -7,11 +7,11 @@ class HorizonDivider extends StatelessWidget {
   @override
   Widget build(BuildContext _) {
     return FractionallySizedBox(
-      widthFactor: Values.dividerFactor,
+      widthFactor: Dimensions.dividerFactor,
       child: Divider(
         color: Palet.divider,
-        thickness: Values.dividerThickness,
-        height: Values.dividerSize)
+        thickness: Dimensions.dividerThickness,
+        height: Dimensions.dividerSize)
     );
   }
 }
@@ -22,11 +22,11 @@ class VerticDivider extends StatelessWidget {
   @override
   Widget build(BuildContext _){
     return FractionallySizedBox(
-      heightFactor: Values.dividerFactor,
+      heightFactor: Dimensions.dividerFactor,
       child: VerticalDivider(
         color: Palet.divider,
-        thickness: Values.dividerThickness,
-        width: Values.dividerSize
+        thickness: Dimensions.dividerThickness,
+        width: Dimensions.dividerSize
       ), 
     );
   }
