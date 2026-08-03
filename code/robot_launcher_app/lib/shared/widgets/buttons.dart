@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:robot_launcher_app/shared/constants/colors.dart';
+import 'package:robot_launcher_app/shared/constants/themes.dart';
 
 class GreenButton extends StatelessWidget {
   const GreenButton({

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:robot_launcher_app/shared/constants/colors.dart';
+import 'package:robot_launcher_app/shared/constants/themes.dart';
 
 class FlexibleSlider extends StatefulWidget {
   const FlexibleSlider({
