@@ -10,7 +10,7 @@ class HorizonDivider extends StatelessWidget {
       widthFactor: Dimensions.dividerFactor,
       child: Divider(
         color: Palet.divider,
-        thickness: Dimensions.dividerThickness,
+        thickness: Dimensions.dividerNarrowThickness,
         height: Dimensions.dividerSize)
     );
   }
@@ -25,7 +25,7 @@ class VerticDivider extends StatelessWidget {
       heightFactor: Dimensions.dividerFactor,
       child: VerticalDivider(
         color: Palet.divider,
-        thickness: Dimensions.dividerThickness,
+        thickness: Dimensions.dividerNarrowThickness,
         width: Dimensions.dividerSize
       ), 
     );
