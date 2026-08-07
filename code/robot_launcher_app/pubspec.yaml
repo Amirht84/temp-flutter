@@ -9,6 +9,12 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
+  flutter_oknob: ^0.0.5
+  rotary_knob:
+    git:
+      url: https://github.com/Amirht84/flutter_rotary_knob.git
+      ref: v0.1.0
+      path: rotary_knob
 
 dev_dependencies:
   flutter_test:

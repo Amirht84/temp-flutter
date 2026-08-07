@@ -13,6 +13,7 @@ import 'package:flutter/material.dart';
 
 // static const secondBackground = Color(0xFFEFF4F7);
 abstract final class Palet {
+  static const shadow = Color(0x33000000);
   static const backGround = Color(0xFFF7F8FA);
   static const secondBackground = Color(0xFFE8F3EC);
   static const cards = Color(0xFFFFFFFF);
@@ -51,6 +52,15 @@ abstract final class Dimensions {
 
   ////////////DIVIDERS////////////
   static const dividerSize = 30.0;
-  static const dividerThickness = 1.0;
+  static const dividerNarrowThickness = 1.0;
+  static const dividerWideThickness = 2.0;
   static const dividerFactor = 0.9;
+
+  ////////////Radio////////////
+  static const radioMainCircleFactor = 0.8;
+  static const radioTickMarkFactor = 0.85;
+  static const radioNarrowTickMarkFactor = 0.95;
+  static const radioNarrowCircleFactor = 0.5;
+  static const radioInnerCircleFactor = 0.25;
+  static const radioArmThickness = 7.0;
 }
