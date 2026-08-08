@@ -36,9 +36,9 @@ abstract final class Dimensions {
   ////////////BODY////////////
   static const bodyPadding = 10.0;
   ////////////SLIDERS////////////
-  static const sliderTitleSize = 15.0;
-  static const sliderValueSize = 34.0;
-  static const sliderFactor = 0.9;
+  static const valueControlTitleSize = 15.0;
+  static const valueControlValueSize = 25.0;
+  static const valueControlFactor = 0.9;
   static const sliderPadding = 10.0;
   static const sliderBoundOffset = 25.0;
 
