@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:robot_launcher_app/shared/widgets/texts.dart';
 import 'package:rotary_knob/rotary_knob.dart';
 import 'package:robot_launcher_app/shared/constants/themes.dart';
 
@@ -32,20 +33,8 @@ class _RotaryKnobCardState extends State<RotaryKnobCard> {
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Text(
-            widget.title,
-            style: TextStyle(
-              fontSize: Dimensions.sliderTitleSize,
-              fontWeight: FontWeight.bold,
-            )
-          ),
-          Text(
-            '${value.toInt()}',
-            style: TextStyle(
-              fontSize: Dimensions.sliderValueSize,
-              fontWeight: FontWeight.bold,
-            ),
-          ),
+          TitleText(widget.title),
+          ValueText('${value.toInt()}'),
           Expanded(
           child: FractionallySizedBox(
             widthFactor: 0.9,

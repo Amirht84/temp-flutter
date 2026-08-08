@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:robot_launcher_app/shared/constants/themes.dart';
+import 'package:robot_launcher_app/shared/widgets/texts.dart';
 
 class FlexibleSlider extends StatefulWidget {
   const FlexibleSlider({
@@ -53,19 +54,8 @@ class _FlexibleSliderState extends State<FlexibleSlider> {
         mainAxisSize: MainAxisSize.min,
         children: [
       
-          Text(
-              widget.title,
-              style: TextStyle(
-                fontSize: Dimensions.sliderTitleSize,
-                fontWeight: FontWeight.bold)
-            ),
-          Text(
-            '${value.toInt()}${widget.unit}',
-            style: TextStyle(
-              fontSize: Dimensions.sliderValueSize,
-              fontWeight: FontWeight.bold,
-            )
-          ),
+          TitleText(widget.title),
+          ValueText('${value.toInt()}${widget.unit}'),
           widget.isVertical
             ? Expanded(child: slider)
             : slider,
@@ -94,8 +84,8 @@ class _Slider extends StatelessWidget {
   Widget build(BuildContext context) {
 
     return FractionallySizedBox(
-      widthFactor: isVertical ? null : Dimensions.sliderFactor,
-      heightFactor: isVertical ? Dimensions.sliderFactor : null,
+      widthFactor: isVertical ? null : Dimensions.valueControlFactor,
+      heightFactor: isVertical ? Dimensions.valueControlFactor : null,
 
       child: Padding(
         padding: isVertical 
