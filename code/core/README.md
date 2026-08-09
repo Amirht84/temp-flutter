@@ -37,3 +37,25 @@ const like = 'sample';
 TODO: Tell users more about the package: where to find more information, how to
 contribute to the package, how to file issues, what response they can expect
 from the package authors, and more.
+
+
+
+// ============================================================
+// FOLDER STRUCTURE
+// ============================================================
+//
+// lib/
+// ├── core.dart          ← main library barrel file
+// └── src/
+//     ├── ble/
+//     │   ├── ble_constants.dart
+//     │   ├── ble_device.dart
+//     │   ├── ble_repository.dart
+//     │   └── ble_service.dart
+//     ├── models/
+//     │   ├── robot_command.dart
+//     │   └── robot_state.dart
+//     └── viewmodels/
+//         └── robot_viewmodel.dart
+//
+// ============================================================

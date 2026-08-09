@@ -1,15 +1,12 @@
 name: core
-description: A starting point for Dart libraries or applications.
-version: 1.0.0
-# repository: https://github.com/my_org/my_repo
+description: Core robot logic and BLE communication.
+version: 0.1.0
 
 environment:
-  sdk: ^3.12.2
+  sdk: ^3.8.0
 
-# Add regular dependencies here.
 dependencies:
-  # path: ^1.9.0
+  flutter_blue_plus: ^1.35.5
 
 dev_dependencies:
-  lints: ^6.0.0
-  test: ^1.25.6
+  test: ^1.25.0

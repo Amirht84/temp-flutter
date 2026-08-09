@@ -1,8 +1,19 @@
-/// Support for doing something awesome.
-///
-/// More dartdocs go here.
-library;
+// ============================================================
+// FILE: lib/core.dart
+// The public-facing barrel — consumers only import this file.
+// ============================================================
 
-export 'src/core_base.dart';
+library core;
 
-// TODO: Export any libraries intended for clients of this package.
+// BLE layer
+export 'src/ble/ble_constants.dart';
+export 'src/ble/ble_device.dart';
+export 'src/ble/ble_repository.dart';
+export 'src/ble/ble_service.dart';
+
+// Models
+export 'src/models/robot_command.dart';
+export 'src/models/robot_state.dart';
+
+// ViewModels
+export 'src/viewmodels/robot_viewmodel.dart';
