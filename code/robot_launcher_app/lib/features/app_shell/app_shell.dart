@@ -29,6 +29,7 @@ class _MainPageState extends State<MainPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Palet.backGround,
       appBar: AppBarShell(),
       body: Padding(
         padding:  EdgeInsets.symmetric(vertical: Dimensions.bodyPadding),
