@@ -8,12 +8,14 @@ class RotaryKnobCard extends StatefulWidget {
     super.key,
     required this.title,
     required this.minValue,
-    required this.maxValue
+    required this.maxValue,
+    required this.unit,
   });
 
   final String title;
   final double minValue;
   final double maxValue;
+  final String unit;
 
   @override
   State<StatefulWidget> createState() => _RotaryKnobCardState();
@@ -22,7 +24,8 @@ class RotaryKnobCard extends StatefulWidget {
 class _RotaryKnobCardState extends State<RotaryKnobCard> {
   late double value;
 
-  @override void initState() {
+  @override
+  void initState() {
     value = (widget.maxValue + widget.minValue) / 2;
     super.initState();
   }
@@ -34,38 +37,38 @@ class _RotaryKnobCardState extends State<RotaryKnobCard> {
         mainAxisSize: MainAxisSize.min,
         children: [
           TitleText(widget.title),
-          ValueText('${value.toInt()}'),
+          ValueText('${value.toInt()}${widget.unit}'),
           Expanded(
-          child: FractionallySizedBox(
-            widthFactor: 0.9,
-            child: RotaryKnob(
-              value: value,
-              maxValue: 25,
-              minValue: -25,
-              startAngle: -140,
-              sweepAngle: 100,
-              onChanged: (newValue) => setState(() => value = newValue),
-              style: const RotaryKnobStyle(
-                normal: RotaryKnobAppearance(
-                  shadowBlurRadius: 1,
-                  majorDivisions: 2,
-                  minorDivisions: 10,
-                  indicatorColor: Palet.primaryAccent,
-                  boundryColor: Palet.primaryAccent,
+            child: FractionallySizedBox(
+              widthFactor: 0.9,
+              child: RotaryKnob(
+                value: value,
+                maxValue: 25,
+                minValue: -25,
+                startAngle: -140,
+                sweepAngle: 100,
+                onChanged: (newValue) => setState(() => value = newValue),
+                style: const RotaryKnobStyle(
+                  normal: RotaryKnobAppearance(
+                    shadowBlurRadius: 1,
+                    majorDivisions: 2,
+                    minorDivisions: 10,
+                    indicatorColor: Palet.primaryAccent,
+                    boundryColor: Palet.primaryAccent,
+                  ),
+                  pressed: RotaryKnobAppearance(
+                    shadowBlurRadius: 10,
+                    majorDivisions: 2,
+                    minorDivisions: 10,
+                    indicatorColor: Palet.primaryAccent,
+                    boundryColor: Palet.primaryAccent,
+                  ),
                 ),
-                pressed: RotaryKnobAppearance(
-                  shadowBlurRadius: 10,
-                  majorDivisions: 2,
-                  minorDivisions: 10,
-                  indicatorColor: Palet.primaryAccent,
-                  boundryColor: Palet.primaryAccent
-                )
-              )
+              ),
             ),
-          )
-          )
-        ]
-      )
+          ),
+        ],
+      ),
     );
   }
 }
