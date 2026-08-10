@@ -1,8 +1,8 @@
 import 'package:robot_launcher_app/shared/constants/themes.dart';
 import 'package:flutter/material.dart';
 
-class MainAppBar extends StatelessWidget implements PreferredSizeWidget {
-  const MainAppBar({super.key});
+class AppBarShell extends StatelessWidget implements PreferredSizeWidget {
+  const AppBarShell({super.key});
 
   @override
   Size get preferredSize => const Size.fromHeight(kToolbarHeight);

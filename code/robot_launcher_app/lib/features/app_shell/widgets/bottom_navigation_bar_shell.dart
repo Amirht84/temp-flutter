@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:robot_launcher_app/shared/constants/themes.dart';
 
-class BottomNavigationBarView extends StatelessWidget {
-  const BottomNavigationBarView ({
+class BottomNavigationBarShell extends StatelessWidget {
+  const BottomNavigationBarShell ({
     super.key,
     required this.currentIndex,
     required this.onTap,

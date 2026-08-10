@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'app_bar.dart';
+import 'widgets/app_bar_shell.dart';
 import 'package:robot_launcher_app/features/home/home.dart';
 import 'package:robot_launcher_app/features/manual/manual.dart';
 import 'package:robot_launcher_app/shared/constants/themes.dart';
-import 'bottom_navigation_bar.dart';
+import 'widgets/bottom_navigation_bar_shell.dart';
 class MainPage extends StatefulWidget {
   const MainPage({super.key});
 
@@ -29,7 +29,7 @@ class _MainPageState extends State<MainPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: MainAppBar(),
+      appBar: AppBarShell(),
       body: Padding(
         padding:  EdgeInsets.symmetric(vertical: Dimensions.bodyPadding),
         child: AnimatedSwitcher(
@@ -48,7 +48,7 @@ class _MainPageState extends State<MainPage> {
           child: pages[currentIndex],
         )
       ),
-      bottomNavigationBar: BottomNavigationBarView(
+      bottomNavigationBar: BottomNavigationBarShell(
         currentIndex: currentIndex,
         onTap:(newIndex) => setState(() => currentIndex = newIndex),
       ),
