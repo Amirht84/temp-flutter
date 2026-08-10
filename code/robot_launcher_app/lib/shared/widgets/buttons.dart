@@ -116,7 +116,7 @@ class _ButtonContext extends StatelessWidget {
     );
   }
 }
-
+/*
 class WhiteButton extends StatelessWidget {
   const WhiteButton({
     super.key,
@@ -155,4 +155,4 @@ class WhiteButton extends StatelessWidget {
       ),
     );
   }
-}
+}*/
