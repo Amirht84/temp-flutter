@@ -37,7 +37,7 @@ abstract final class Dimensions {
   static const bodyPadding = 10.0;
   ////////////SLIDERS////////////
   static const valueControlTitleSize = 15.0;
-  static const valueControlValueSize = 25.0;
+  static const valueControlValueSize = 22.0;
   static const valueControlFactor = 0.9;
   static const sliderPadding = 10.0;
   static const sliderBoundOffset = 25.0;
@@ -45,7 +45,7 @@ abstract final class Dimensions {
   ////////////BUTTONS////////////
   static const buttonCurve = 14.0;
   static const buttonFontSize = 18.0;
-  static const buttonContextSize = 100.0;
+  static const buttonContextSize = 125.0;
   static const buttonHeight = 50.0;
   static const buttonWidthFactor = 0.9;
   static const buttonPadding = 5.0;
@@ -63,4 +63,6 @@ abstract final class Dimensions {
   static const radioNarrowCircleFactor = 0.5;
   static const radioInnerCircleFactor = 0.25;
   static const radioArmThickness = 7.0;
+
+  static const titleContextSize = 150.0;
 }
