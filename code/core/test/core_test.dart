@@ -80,7 +80,6 @@ Future<void> main() async {
           connectedDevice = _lastScan[idx - 1];
           print('Connecting to ${connectedDevice.name}...');
           await repo.connectToRobot(connectedDevice);
-          await Future.delayed(const Duration(seconds: 1));
 
         case 'disconnect':
           await repo.disconnectFromRobot();
@@ -92,7 +91,6 @@ Future<void> main() async {
             if (speed == null) return;
             await repo.sendCommand(RobotCommand.topMotorSpeed(speed));
             print('Sent: top motor speed = $speed%');
-            await Future.delayed(const Duration(seconds: 1));
           });
 
         case 'bottom':
@@ -101,7 +99,6 @@ Future<void> main() async {
             if (speed == null) return;
             await repo.sendCommand(RobotCommand.bottomMotorSpeed(speed));
             print('Sent: bottom motor speed = $speed%');
-            await Future.delayed(const Duration(seconds: 1));
           });
 
         case 'vertical':
@@ -110,7 +107,6 @@ Future<void> main() async {
             if (deg == null) return;
             await repo.sendCommand(RobotCommand.verticalAngle(deg));
             print('Sent: vertical angle = $deg°');
-            await Future.delayed(const Duration(seconds: 1));
           });
 
         case 'horizontal':
@@ -119,21 +115,18 @@ Future<void> main() async {
             if (deg == null) return;
             await repo.sendCommand(RobotCommand.horizontalAngle(deg));
             print('Sent: horizontal angle = $deg°');
-            await Future.delayed(const Duration(seconds: 1));
           });
 
         case 'launch':
           await _requireConnected(connectedDevice, () async {
             await repo.sendCommand(const RobotCommand.launch());
             print('Sent: LAUNCH');
-            await Future.delayed(const Duration(seconds: 1));
           });
 
         case 'stop':
           await _requireConnected(connectedDevice, () async {
             await repo.sendCommand(const RobotCommand.stop());
             print('Sent: STOP');
-            await Future.delayed(const Duration(seconds: 1));
           });
 
         case 'state':
