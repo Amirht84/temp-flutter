@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
-class HomePage extends StatelessWidget {
-  const HomePage({
+class ComingSoonPage extends StatelessWidget {
+  const ComingSoonPage({
     super.key
   });
   @override

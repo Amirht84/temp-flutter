@@ -15,9 +15,9 @@ class _MainPageState extends State<MainPage> {
   late int currentIndex;
   final pages = const [
     ManualPage(),
-    HomePage(),
-    HomePage(),
-    HomePage(),
+    ComingSoonPage(),
+    ComingSoonPage(),
+    ComingSoonPage(),
   ];
   @override
   void initState() {
