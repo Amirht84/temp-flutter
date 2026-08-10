@@ -15,27 +15,25 @@ class BottomNavigationBarShell extends StatelessWidget {
   Widget build(BuildContext context) {
     return ClipRRect(
       borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
-      child: BottomNavigationBar(
-        currentIndex: currentIndex,
-
-        onTap: onTap,
-        selectedItemColor: Palet.pressed,
-        unselectedItemColor: Palet.disabled,
-        backgroundColor: Colors.black,
-        items: const [
-          BottomNavigationBarItem(
+      child: NavigationBar(
+        backgroundColor: Palet.secondBackground,
+        selectedIndex: currentIndex,
+        indicatorColor: Palet.pressed,
+        onDestinationSelected: onTap,
+        destinations: const [
+          NavigationDestination(
             icon: Icon(Icons.home),
             label: 'home'
           ),
-          BottomNavigationBarItem(
+          NavigationDestination(
             icon: Icon(Icons.play_arrow),
             label: 'play',
           ),
-          BottomNavigationBarItem(
+          NavigationDestination(
             icon: Icon(Icons.abc),
             label: 'temp',
-          ),
-          BottomNavigationBarItem(
+          ),  
+          NavigationDestination(
             icon: Icon(Icons.abc),
             label: 'temp'
           ),
