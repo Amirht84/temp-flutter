@@ -1,40 +1,75 @@
 // ============================================================
 // FILE: lib/src/models/robot_state.dart
-// Immutable snapshot of what the robot reported back over BLE.
+// Immutable snapshot of the last setpoints sent to the robot.
+//
+// NOTE: the current BLE protocol (BleConstants.RPM / Hangle /
+// Vangle / Shoot / Stop / Movement) is write-only — the robot
+// does not notify telemetry back. This state is therefore the
+// last value the app *commanded*, tracked locally by
+// BleRepository, so the UI has something to bind to (e.g. to
+// show current setpoints or disable a duplicate command).
 // ============================================================
 
-/// Decoded robot telemetry received via BLE status notifications.
+/// Last-known commanded state of the robot.
 class RobotState {
   const RobotState({
     required this.isRunning,
-    required this.topMotorSpeed,
-    required this.bottomMotorSpeed,
+    required this.topRpm,
+    required this.bottomRpm,
+    required this.angleH,
+    required this.angleV,
+    required this.joystickX,
+    required this.joystickY,
   });
 
-  /// `true` when the robot is actively launching.
+  /// `true` after [BleRepository.shoot], `false` after [BleRepository.stop].
   final bool isRunning;
 
-  /// Top motor speed 0–100 %.
-  final int topMotorSpeed;
+  /// Last commanded top motor RPM.
+  final int topRpm;
 
-  /// Bottom motor speed 0–100 %.
-  final int bottomMotorSpeed;
+  /// Last commanded bottom motor RPM.
+  final int bottomRpm;
 
-  /// Sentinel value before any telemetry has arrived.
+  /// Last commanded horizontal (pan) angle, in degrees.
+  final double angleH;
+
+  /// Last commanded vertical (tilt) angle, in degrees.
+  final double angleV;
+
+  /// Last commanded joystick X axis (-1.0..1.0).
+  final double joystickX;
+
+  /// Last commanded joystick Y axis (-1.0..1.0).
+  final double joystickY;
+
+  /// Sentinel value before any command has been sent.
   static const RobotState initial = RobotState(
     isRunning: false,
-    topMotorSpeed: 0,
-    bottomMotorSpeed: 0,
+    topRpm: 0,
+    bottomRpm: 0,
+    angleH: 0,
+    angleV: 0,
+    joystickX: 0,
+    joystickY: 0,
   );
 
   RobotState copyWith({
     bool? isRunning,
-    int? topMotorSpeed,
-    int? bottomMotorSpeed,
+    int? topRpm,
+    int? bottomRpm,
+    double? angleH,
+    double? angleV,
+    double? joystickX,
+    double? joystickY,
   }) => RobotState(
     isRunning: isRunning ?? this.isRunning,
-    topMotorSpeed: topMotorSpeed ?? this.topMotorSpeed,
-    bottomMotorSpeed: bottomMotorSpeed ?? this.bottomMotorSpeed,
+    topRpm: topRpm ?? this.topRpm,
+    bottomRpm: bottomRpm ?? this.bottomRpm,
+    angleH: angleH ?? this.angleH,
+    angleV: angleV ?? this.angleV,
+    joystickX: joystickX ?? this.joystickX,
+    joystickY: joystickY ?? this.joystickY,
   );
 
   @override
@@ -42,14 +77,27 @@ class RobotState {
       identical(this, other) ||
       other is RobotState &&
           other.isRunning == isRunning &&
-          other.topMotorSpeed == topMotorSpeed &&
-          other.bottomMotorSpeed == bottomMotorSpeed;
+          other.topRpm == topRpm &&
+          other.bottomRpm == bottomRpm &&
+          other.angleH == angleH &&
+          other.angleV == angleV &&
+          other.joystickX == joystickX &&
+          other.joystickY == joystickY;
 
   @override
-  int get hashCode => Object.hash(isRunning, topMotorSpeed, bottomMotorSpeed);
+  int get hashCode => Object.hash(
+    isRunning,
+    topRpm,
+    bottomRpm,
+    angleH,
+    angleV,
+    joystickX,
+    joystickY,
+  );
 
   @override
   String toString() =>
-      'RobotState(running: $isRunning, top: $topMotorSpeed, '
-      'bottom: $bottomMotorSpeed)';
+      'RobotState(running: $isRunning, rpm: $topRpm/$bottomRpm, '
+      'angleH: $angleH°, angleV: $angleV°, '
+      'joystick: ($joystickX, $joystickY))';
 }

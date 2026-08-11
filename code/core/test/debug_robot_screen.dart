@@ -1,21 +1,20 @@
 // ============================================================
-// FILE: lib/debug_robot_screen.dart
+// FILE: test/debug_robot_screen.dart
 // A throwaway test harness — NOT the real UI your friend is
-// building. Just enough buttons/sliders to prove the real BLE
-// path (FlutterBluePlusService -> BleRepository) works against
-// an actual robot, independent of any ViewModel or final UI.
+// building. Just enough controls to prove the real BLE path
+// (FlutterBluePlusService -> BleRepository) works against an
+// actual robot, independent of any ViewModel or final UI.
 //
 // Run it on a physical phone with:
-//   flutter run -t lib/main_debug.dart
+//   flutter run -t test/main_debug.dart
 // ============================================================
 
 import 'package:flutter/material.dart';
 
-import 'src/ble/ble_device.dart';
-import 'src/ble/ble_repository.dart';
-import 'src/ble/flutter_blue_plus_service.dart';
-import 'src/models/robot_command.dart';
-import 'src/models/robot_state.dart';
+import '../lib/src/ble/ble_device.dart';
+import '../lib/src/ble/ble_repository.dart';
+import '../lib/src/ble/flutter_blue_plus_service.dart';
+import '../lib/src/models/robot_state.dart';
 
 class DebugRobotScreen extends StatefulWidget {
   const DebugRobotScreen({super.key});
@@ -35,7 +34,9 @@ class _DebugRobotScreenState extends State<DebugRobotScreen> {
   RobotState _state = RobotState.initial;
   String _log = '';
 
-  double _top = 0, _bottom = 0, _vertical = 0, _horizontal = 0;
+  double _topRpm = 0, _bottomRpm = 0;
+  double _angleH = 0, _angleV = 0;
+  double _joyX = 0, _joyY = 0;
 
   @override
   void initState() {
@@ -92,11 +93,11 @@ class _DebugRobotScreenState extends State<DebugRobotScreen> {
     setState(() => _connected = null);
   }
 
-  Future<void> _send(RobotCommand cmd) async {
+  Future<void> _run(String label, Future<void> Function() action) async {
     try {
-      await _repo.sendCommand(cmd);
+      await action();
     } catch (e) {
-      _appendLog('❌ send failed: $e');
+      _appendLog('❌ $label failed: $e');
     }
   }
 
@@ -118,7 +119,9 @@ class _DebugRobotScreenState extends State<DebugRobotScreen> {
             Row(
               children: [
                 Icon(
-                  _isConnected ? Icons.bluetooth_connected : Icons.bluetooth_disabled,
+                  _isConnected
+                      ? Icons.bluetooth_connected
+                      : Icons.bluetooth_disabled,
                   color: _isConnected ? Colors.green : Colors.red,
                 ),
                 const SizedBox(width: 8),
@@ -130,7 +133,10 @@ class _DebugRobotScreenState extends State<DebugRobotScreen> {
                     child: Text(_isScanning ? 'Scanning...' : 'Scan'),
                   )
                 else
-                  OutlinedButton(onPressed: _disconnect, child: const Text('Disconnect')),
+                  OutlinedButton(
+                    onPressed: _disconnect,
+                    child: const Text('Disconnect'),
+                  ),
               ],
             ),
             if (_connected == null && _found.isNotEmpty)
@@ -153,38 +159,57 @@ class _DebugRobotScreenState extends State<DebugRobotScreen> {
                 ),
               ),
             const Divider(),
-            Text('Telemetry: $_state', style: const TextStyle(fontWeight: FontWeight.bold)),
+            Text(
+              'Last commanded: $_state',
+              style: const TextStyle(fontWeight: FontWeight.bold),
+            ),
             const SizedBox(height: 12),
-            _slider('Top motor', _top, 0, 100, (v) {
-              setState(() => _top = v);
-              _send(RobotCommand.topMotorSpeed(v.round()));
+            _slider('Top RPM', _topRpm, 0, 100, (v) {
+              setState(() => _topRpm = v);
+              _run('setRpm', () => _repo.setRpm(v.round(), _bottomRpm.round()));
             }),
-            _slider('Bottom motor', _bottom, 0, 100, (v) {
-              setState(() => _bottom = v);
-              _send(RobotCommand.bottomMotorSpeed(v.round()));
+            _slider('Bottom RPM', _bottomRpm, 0, 100, (v) {
+              setState(() => _bottomRpm = v);
+              _run('setRpm', () => _repo.setRpm(_topRpm.round(), v.round()));
             }),
-            _slider('Vertical angle', _vertical, -45, 45, (v) {
-              setState(() => _vertical = v);
-              _send(RobotCommand.verticalAngle(v.round()));
+            _slider('Angle H', _angleH, -180, 180, (v) {
+              setState(() => _angleH = v);
+              _run('setAngleH', () => _repo.setAngleH(v));
             }),
-            _slider('Horizontal angle', _horizontal, -180, 180, (v) {
-              setState(() => _horizontal = v);
-              _send(RobotCommand.horizontalAngle(v.round()));
+            _slider('Angle V', _angleV, -45, 45, (v) {
+              setState(() => _angleV = v);
+              _run('setAngleV', () => _repo.setAngleV(v));
+            }),
+            _slider('Joystick X', _joyX, -1, 1, (v) {
+              setState(() => _joyX = v);
+              _run('joystick', () => _repo.joystick(v, _joyY));
+            }),
+            _slider('Joystick Y', _joyY, -1, 1, (v) {
+              setState(() => _joyY = v);
+              _run('joystick', () => _repo.joystick(_joyX, v));
             }),
             Row(
               children: [
                 Expanded(
                   child: ElevatedButton(
-                    onPressed: _isConnected ? () => _send(const RobotCommand.launch()) : null,
-                    style: ElevatedButton.styleFrom(backgroundColor: Colors.orange),
-                    child: const Text('LAUNCH'),
+                    onPressed: _isConnected
+                        ? () => _run('shoot', _repo.shoot)
+                        : null,
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.orange,
+                    ),
+                    child: const Text('SHOOT'),
                   ),
                 ),
                 const SizedBox(width: 8),
                 Expanded(
                   child: ElevatedButton(
-                    onPressed: _isConnected ? () => _send(const RobotCommand.stop()) : null,
-                    style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
+                    onPressed: _isConnected
+                        ? () => _run('stop', _repo.stop)
+                        : null,
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.red,
+                    ),
                     child: const Text('STOP'),
                   ),
                 ),
@@ -193,7 +218,10 @@ class _DebugRobotScreenState extends State<DebugRobotScreen> {
             const Divider(),
             Expanded(
               child: SingleChildScrollView(
-                child: Text(_log, style: const TextStyle(fontFamily: 'monospace', fontSize: 12)),
+                child: Text(
+                  _log,
+                  style: const TextStyle(fontFamily: 'monospace', fontSize: 12),
+                ),
               ),
             ),
           ],
@@ -202,10 +230,19 @@ class _DebugRobotScreenState extends State<DebugRobotScreen> {
     );
   }
 
-  Widget _slider(String label, double value, double min, double max, ValueChanged<double> onChanged) {
+  Widget _slider(
+    String label,
+    double value,
+    double min,
+    double max,
+    ValueChanged<double> onChanged,
+  ) {
     return Row(
       children: [
-        SizedBox(width: 120, child: Text('$label: ${value.round()}')),
+        SizedBox(
+          width: 120,
+          child: Text('$label: ${value.toStringAsFixed(1)}'),
+        ),
         Expanded(
           child: Slider(
             value: value,

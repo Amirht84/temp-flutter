@@ -23,7 +23,9 @@ abstract class BleService {
 
   // ── Connection ─────────────────────────────────────────────
 
-  /// Connects to [device] and resolves when the link is ready.
+  /// Connects to [device] and resolves when the link is ready,
+  /// i.e. once every characteristic UUID in `BleConstants` has
+  /// been discovered on the robot's GATT service.
   Future<void> connect(BleDevice device);
 
   /// Disconnects from the currently connected device.
@@ -34,9 +36,8 @@ abstract class BleService {
 
   // ── Communication ──────────────────────────────────────────
 
-  /// Writes [data] bytes to the command characteristic.
-  Future<void> writeCommand(List<int> data);
-
-  /// Subscribes to status notifications from the robot.
-  Stream<List<int>> get statusNotifications;
+  /// Writes [data] bytes to the characteristic identified by
+  /// [characteristicUuid] (one of the UUID constants declared in
+  /// `BleConstants`, e.g. `BleConstants.RPM`).
+  Future<void> writeCharacteristic(String characteristicUuid, List<int> data);
 }

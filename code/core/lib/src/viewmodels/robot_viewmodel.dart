@@ -13,7 +13,6 @@ import 'package:flutter/foundation.dart'; // ChangeNotifier
 
 import '../ble/ble_device.dart';
 import '../ble/ble_repository.dart';
-import '../models/robot_command.dart';
 import '../models/robot_state.dart';
 
 /// Connection life-cycle states.
@@ -51,20 +50,6 @@ class RobotViewModel extends ChangeNotifier {
 
   bool get isConnected => _connectionStatus == ConnectionStatus.connected;
 
-  // ── Slider / picker backing values ─────────────────────────
-
-  int _topMotorSpeed = 0;
-  int get topMotorSpeed => _topMotorSpeed;
-
-  int _bottomMotorSpeed = 0;
-  int get bottomMotorSpeed => _bottomMotorSpeed;
-
-  int _verticalAngle = 0;
-  int get verticalAngle => _verticalAngle;
-
-  int _horizontalAngle = 0;
-  int get horizontalAngle => _horizontalAngle;
-
   // ── Initialisation ─────────────────────────────────────────
 
   void _init() {
@@ -75,7 +60,9 @@ class RobotViewModel extends ChangeNotifier {
       );
     }, onError: (e) => _setError(e.toString()));
 
-    // Mirror robot telemetry into _robotState.
+    // Mirror last-commanded state (see RobotState docs — this
+    // protocol has no telemetry notify, so this simply echoes
+    // what we last told the robot to do).
     _stateSub = _repo.robotStateStream.listen((state) {
       _robotState = state;
       notifyListeners();
@@ -137,46 +124,34 @@ class RobotViewModel extends ChangeNotifier {
 
   // ── 6 UI control methods ───────────────────────────────────
 
-  /// Called when the user changes the top motor speed slider.
-  Future<void> setTopMotorSpeed(int speed) async {
-    _topMotorSpeed = speed;
-    notifyListeners();
-    await _sendSafely(RobotCommand.topMotorSpeed(speed));
-  }
+  /// Sets the top & bottom flywheel motor RPM.
+  Future<void> setRpm(int topRpm, int bottomRpm) =>
+      _sendSafely(() => _repo.setRpm(topRpm, bottomRpm));
 
-  /// Called when the user changes the bottom motor speed slider.
-  Future<void> setBottomMotorSpeed(int speed) async {
-    _bottomMotorSpeed = speed;
-    notifyListeners();
-    await _sendSafely(RobotCommand.bottomMotorSpeed(speed));
-  }
+  /// Sets the horizontal (pan) angle, in degrees.
+  Future<void> setAngleH(double degrees) =>
+      _sendSafely(() => _repo.setAngleH(degrees));
 
-  /// Called when the user changes the vertical angle slider.
-  Future<void> setVerticalAngle(int degrees) async {
-    _verticalAngle = degrees;
-    notifyListeners();
-    await _sendSafely(RobotCommand.verticalAngle(degrees));
-  }
+  /// Sets the vertical (tilt) angle, in degrees.
+  Future<void> setAngleV(double degrees) =>
+      _sendSafely(() => _repo.setAngleV(degrees));
 
-  /// Called when the user changes the horizontal angle slider.
-  Future<void> setHorizontalAngle(int degrees) async {
-    _horizontalAngle = degrees;
-    notifyListeners();
-    await _sendSafely(RobotCommand.horizontalAngle(degrees));
-  }
+  /// Fires the launcher.
+  Future<void> shoot() => _sendSafely(_repo.shoot);
 
-  /// Called when the user taps the **Launch** button.
-  Future<void> launch() async => _sendSafely(const RobotCommand.launch());
+  /// Stops the launcher / motors.
+  Future<void> stop() => _sendSafely(_repo.stop);
 
-  /// Called when the user taps the **Stop** button.
-  Future<void> stop() async => _sendSafely(const RobotCommand.stop());
+  /// Drives the robot via a normalised 2-axis joystick (-1.0..1.0).
+  Future<void> joystick(double x, double y) =>
+      _sendSafely(() => _repo.joystick(x, y));
 
   // ── Private helpers ────────────────────────────────────────
 
-  Future<void> _sendSafely(RobotCommand command) async {
+  Future<void> _sendSafely(Future<void> Function() action) async {
     if (!isConnected) return;
     try {
-      await _repo.sendCommand(command);
+      await action();
     } catch (e) {
       _setError(e.toString());
     }

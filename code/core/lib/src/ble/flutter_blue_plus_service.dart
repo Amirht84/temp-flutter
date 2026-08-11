@@ -23,19 +23,26 @@ import 'ble_service.dart';
 
 class FlutterBluePlusService implements BleService {
   fbp.BluetoothDevice? _device;
-  fbp.BluetoothCharacteristic? _commandChar;
-  fbp.BluetoothCharacteristic? _statusChar;
+
+  /// Discovered characteristics, keyed by their (lower-cased) UUID
+  /// string — one entry per constant in `BleConstants`
+  /// (RPM, Hangle, Vangle, Shoot, Stop, Movement).
+  final Map<String, fbp.BluetoothCharacteristic> _characteristics = {};
 
   StreamSubscription<List<fbp.ScanResult>>? _scanSub;
   StreamSubscription<fbp.BluetoothConnectionState>? _connStateSub;
-  StreamSubscription<List<int>>? _notifySub;
 
   final _connectionController = StreamController<bool>.broadcast();
-  final _statusController = StreamController<List<int>>.broadcast();
 
   final _serviceUuid = fbp.Guid(BleConstants.robotServiceUuid);
-  final _commandCharUuid = fbp.Guid(BleConstants.commandCharUuid);
-  final _statusCharUuid = fbp.Guid(BleConstants.statusCharUuid);
+
+  /// Characteristics that get an acknowledged write since they're
+  /// safety-critical. Everything else (RPM, angles, joystick) is
+  /// written unacknowledged for lower latency.
+  static const _criticalCharacteristics = {
+    BleConstants.Shoot,
+    BleConstants.Stop,
+  };
 
   /// Call once (e.g. on app start) and await before scanning, so you get
   /// a clear error instead of a scan that silently finds nothing.
@@ -76,9 +83,10 @@ class FlutterBluePlusService implements BleService {
 
     // Filter by our robot's service UUID so we don't see every random BLE
     // device (fridges, headphones, etc.) — same UUID used in ble_constants.
-    fbp.FlutterBluePlus
-        .startScan(withServices: [_serviceUuid], timeout: timeout)
-        .catchError((Object e) => controller.addError(e));
+    fbp.FlutterBluePlus.startScan(
+      withServices: [_serviceUuid],
+      timeout: timeout,
+    ).catchError((Object e) => controller.addError(e));
 
     fbp.FlutterBluePlus.isScanning
         .where((scanning) => !scanning)
@@ -122,32 +130,37 @@ class FlutterBluePlusService implements BleService {
       ),
     );
 
-    _commandChar = robotService.characteristics.firstWhere(
-      (c) => c.uuid == _commandCharUuid,
-      orElse: () => throw StateError('Command characteristic not found'),
-    );
-    _statusChar = robotService.characteristics.firstWhere(
-      (c) => c.uuid == _statusCharUuid,
-      orElse: () => throw StateError('Status characteristic not found'),
-    );
+    _characteristics.clear();
+    for (final c in robotService.characteristics) {
+      _characteristics[c.uuid.str.toLowerCase()] = c;
+    }
 
-    await _notifySub?.cancel();
-    await _statusChar!.setNotifyValue(true);
-    _notifySub = _statusChar!.lastValueStream.listen(
-      _statusController.add,
-      onError: _statusController.addError,
-    );
+    // Fail fast with a clear message naming exactly which
+    // characteristic is missing, instead of a null-check crash
+    // later on the first write.
+    const expected = {
+      'RPM': BleConstants.RPM,
+      'Hangle': BleConstants.Hangle,
+      'Vangle': BleConstants.Vangle,
+      'Shoot': BleConstants.Shoot,
+      'Stop': BleConstants.Stop,
+      'Movement': BleConstants.Movement,
+    };
+    for (final entry in expected.entries) {
+      if (!_characteristics.containsKey(entry.value.toLowerCase())) {
+        throw StateError(
+          '${entry.key} characteristic (${entry.value}) not found on robot',
+        );
+      }
+    }
   }
 
   @override
   Future<void> disconnect() async {
-    await _notifySub?.cancel();
-    _notifySub = null;
     await _connStateSub?.cancel();
     _connStateSub = null;
     await _device?.disconnect();
-    _commandChar = null;
-    _statusChar = null;
+    _characteristics.clear();
     _device = null;
   }
 
@@ -157,30 +170,26 @@ class FlutterBluePlusService implements BleService {
   // ── Communication ──────────────────────────────────────────
 
   @override
-  Future<void> writeCommand(List<int> data) async {
-    final char = _commandChar;
+  Future<void> writeCharacteristic(
+    String characteristicUuid,
+    List<int> data,
+  ) async {
+    final char = _characteristics[characteristicUuid.toLowerCase()];
     if (char == null) {
-      throw StateError('writeCommand() called before a successful connect()');
+      throw StateError(
+        'writeCharacteristic($characteristicUuid) called before a '
+        'successful connect(), or the characteristic was not found.',
+      );
     }
-
-    // Launch/stop (0x05 / 0x06 — see BleRepository._encodeCommand) get an
-    // acknowledged write since they're safety-critical. Continuous slider
-    // updates (motor speed, angles) go unacknowledged for lower latency —
-    // losing one of many rapid updates doesn't matter.
-    final isCritical = data.isNotEmpty && (data[0] == 0x05 || data[0] == 0x06);
+    final isCritical = _criticalCharacteristics.contains(characteristicUuid);
     await char.write(data, withoutResponse: !isCritical);
   }
-
-  @override
-  Stream<List<int>> get statusNotifications => _statusController.stream;
 
   // ── Cleanup ────────────────────────────────────────────────
 
   void dispose() {
     _scanSub?.cancel();
     _connStateSub?.cancel();
-    _notifySub?.cancel();
     _connectionController.close();
-    _statusController.close();
   }
 }

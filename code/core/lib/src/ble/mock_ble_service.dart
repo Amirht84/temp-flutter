@@ -8,39 +8,30 @@
 //
 // It simulates a robot that:
 //  • is "discoverable" during scanForDevices()
-//  • parses incoming command frames the same way real firmware
-//    would (validates length + checksum)
-//  • updates an internal fake robot state accordingly
-//  • periodically pushes status notifications back, encoded
-//    exactly the way BleRepository._decodeState() expects them
+//  • parses incoming frames on each characteristic the same way
+//    real firmware would (validates length + XOR checksum)
+//  • logs the decoded value so you can sanity-check the encoding
+//    coming out of BleRepository before touching real hardware
 // ============================================================
 
 import 'dart:async';
+import 'dart:typed_data';
 
+import 'ble_constants.dart';
 import 'ble_device.dart';
 import 'ble_service.dart';
 
 class MockBleService implements BleService {
-  MockBleService({this.verbose = true, this.simulateNotifications = true});
+  MockBleService({this.verbose = true});
 
-  /// Prints what the fake robot receives/sends — handy for a CLI.
+  /// Prints what the fake robot receives — handy for a CLI.
   final bool verbose;
 
-  /// Whether to periodically push status frames while connected.
-  final bool simulateNotifications;
-
   final _connectionController = StreamController<bool>.broadcast();
-  final _statusController = StreamController<List<int>>.broadcast();
 
   bool _connected = false;
-  Timer? _notifyTimer;
   StreamController<BleDevice>? _scanController;
   Timer? _scanTicker;
-
-  // ── Fake internal robot state, mutated by writeCommand() ────
-  int _topSpeed = 0;
-  int _bottomSpeed = 0;
-  bool _isRunning = false;
 
   static final _fakeDevices = <BleDevice>[
     const BleDevice(id: 'AA:BB:CC:DD:EE:01', name: 'TennisBot-01', rssi: -42),
@@ -95,17 +86,17 @@ class MockBleService implements BleService {
 
   @override
   Future<void> connect(BleDevice device) async {
-    await Future.delayed(const Duration(milliseconds: 250)); // simulate radio latency
+    await Future.delayed(
+      const Duration(milliseconds: 250),
+    ); // simulate radio latency
     _connected = true;
     _log('connected to ${device.name}');
     _connectionController.add(true);
-    if (simulateNotifications) _startNotifying();
   }
 
   @override
   Future<void> disconnect() async {
     _connected = false;
-    _notifyTimer?.cancel();
     _log('disconnected');
     _connectionController.add(false);
   }
@@ -116,85 +107,78 @@ class MockBleService implements BleService {
   // ── Communication ──────────────────────────────────────────
 
   @override
-  Future<void> writeCommand(List<int> data) async {
+  Future<void> writeCharacteristic(
+    String characteristicUuid,
+    List<int> data,
+  ) async {
     if (!_connected) {
-      throw StateError('writeCommand() called while not connected');
-    }
-    if (data.length != 4) {
-      throw ArgumentError('Malformed frame (expected 4 bytes): $data');
+      throw StateError('writeCharacteristic() called while not connected');
     }
 
-    final cmdType = data[0];
-    final high = data[1];
-    final low = data[2];
-    final checksum = data[3];
-    final expected = (cmdType ^ high ^ low) & 0xFF;
-
-    if (checksum != expected) {
-      // Mirrors how real firmware would silently drop a corrupt frame.
-      _log('DROPPED corrupt frame $data (checksum $checksum != $expected)');
-      return;
-    }
-
-    final value = (high << 8) | low;
-
-    switch (cmdType) {
-      case 0x01:
-        _topSpeed = value;
-        _log('top motor speed -> $_topSpeed%');
-      case 0x02:
-        _bottomSpeed = value;
-        _log('bottom motor speed -> $_bottomSpeed%');
-      case 0x03:
-        _log('vertical angle raw byte -> $value (offset +45)');
-      case 0x04:
-        _log('horizontal angle raw byte -> $value (offset +180)');
-      case 0x05:
-        _isRunning = true;
-        _log('LAUNCH');
-      case 0x06:
-        _isRunning = false;
-        _topSpeed = 0;
-        _bottomSpeed = 0;
-        _log('STOP');
+    switch (characteristicUuid) {
+      case BleConstants.RPM:
+        _handleRpm(data);
+      case BleConstants.Hangle:
+        _handleAngle('horizontal', data);
+      case BleConstants.Vangle:
+        _handleAngle('vertical', data);
+      case BleConstants.Movement:
+        _handleJoystick(data);
+      case BleConstants.Shoot:
+        _log('SHOOT (raw: $data)');
+      case BleConstants.Stop:
+        _log('STOP (raw: $data)');
       default:
-        throw ArgumentError(
-          'Unknown command type: 0x${cmdType.toRadixString(16)}',
-        );
+        throw ArgumentError('Unknown characteristic UUID: $characteristicUuid');
     }
-
-    _emitStatus();
   }
 
-  @override
-  Stream<List<int>> get statusNotifications => _statusController.stream;
-
-  // ── Internal helpers ───────────────────────────────────────
-
-  void _startNotifying() {
-    _notifyTimer?.cancel();
-    // Robot "heartbeats" its telemetry every couple seconds, same as
-    // real BLE notify characteristics typically would.
-    _notifyTimer = Timer.periodic(
-      const Duration(seconds: 2),
-      (_) => _emitStatus(),
-    );
-    _emitStatus(); // send one immediately on connect
+  void _handleRpm(List<int> data) {
+    if (!_checksumOk(data, 4)) return;
+    final top = (data[0] << 8) | data[1];
+    final bottom = (data[2] << 8) | data[3];
+    _log('RPM -> top: $top, bottom: $bottom');
   }
 
-  void _emitStatus() {
-    if (_statusController.isClosed) return;
-    final isRunningByte = _isRunning ? 0x01 : 0x00;
-    final checksum = (isRunningByte ^ _topSpeed ^ _bottomSpeed) & 0xFF;
-    _statusController.add([isRunningByte, _topSpeed, _bottomSpeed, checksum]);
+  void _handleAngle(String label, List<int> data) {
+    if (!_checksumOk(data, 4)) return;
+    final value = ByteData.sublistView(
+      Uint8List.fromList(data.sublist(0, 4)),
+    ).getFloat32(0, Endian.big);
+    _log('$label angle -> $value°');
+  }
+
+  void _handleJoystick(List<int> data) {
+    if (!_checksumOk(data, 8)) return;
+    final bytes = Uint8List.fromList(data.sublist(0, 8));
+    final x = ByteData.sublistView(bytes).getFloat32(0, Endian.big);
+    final y = ByteData.sublistView(bytes).getFloat32(4, Endian.big);
+    _log('joystick -> x: $x, y: $y');
+  }
+
+  /// Validates the trailing XOR checksum byte after [payloadLength]
+  /// payload bytes. Mirrors how real firmware would silently drop a
+  /// corrupt frame.
+  bool _checksumOk(List<int> data, int payloadLength) {
+    if (data.length != payloadLength + 1) {
+      _log(
+        'DROPPED malformed frame (expected ${payloadLength + 1} bytes): $data',
+      );
+      return false;
+    }
+    final payload = data.sublist(0, payloadLength);
+    final expected = payload.fold(0, (acc, b) => acc ^ b) & 0xFF;
+    if (data[payloadLength] != expected) {
+      _log('DROPPED corrupt frame $data (checksum mismatch)');
+      return false;
+    }
+    return true;
   }
 
   /// Frees resources — call when the CLI session ends.
   void dispose() {
-    _notifyTimer?.cancel();
     _scanTicker?.cancel();
     _scanController?.close();
     _connectionController.close();
-    _statusController.close();
   }
 }

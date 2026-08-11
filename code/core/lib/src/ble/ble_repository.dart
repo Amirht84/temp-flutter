@@ -1,13 +1,14 @@
 // ============================================================
 // FILE: lib/src/ble/ble_repository.dart
-// Repository layer: converts raw BLE bytes into domain objects
-// and exposes a clean async API to the ViewModel.
-// The ViewModel NEVER calls BleService directly.
+// Repository layer: converts domain calls into raw BLE writes
+// on the correct characteristic, and exposes a clean async API
+// to the ViewModel. The ViewModel NEVER calls BleService
+// directly.
 // ============================================================
 
 import 'dart:async';
+import 'dart:typed_data';
 
-import '../models/robot_command.dart';
 import '../models/robot_state.dart';
 import 'ble_constants.dart';
 import 'ble_device.dart';
@@ -17,8 +18,10 @@ import 'ble_service.dart';
 /// (business logic).
 ///
 /// Responsibilities:
-///  • Encodes [RobotCommand] → byte arrays.
-///  • Decodes status byte arrays → [RobotState].
+///  • Encodes each control action into the byte frame expected
+///    by its own BLE characteristic (see `BleConstants`).
+///  • Tracks the last-commanded [RobotState] locally, since the
+///    current protocol is write-only (no telemetry notify).
 ///  • Manages scan / connection life-cycle.
 class BleRepository {
   BleRepository({required BleService bleService}) : _ble = bleService;
@@ -27,13 +30,16 @@ class BleRepository {
 
   // ── Internal state ─────────────────────────────────────────
   final _robotStateController = StreamController<RobotState>.broadcast();
-
-  StreamSubscription<List<int>>? _statusSub;
+  RobotState _state = RobotState.initial;
 
   // ── Public streams ─────────────────────────────────────────
 
-  /// Latest robot telemetry decoded from BLE notifications.
+  /// Last-known commanded state (see [RobotState] docs — this is
+  /// NOT telemetry read back from the robot).
   Stream<RobotState> get robotStateStream => _robotStateController.stream;
+
+  /// Current cached state, without needing to subscribe.
+  RobotState get currentState => _state;
 
   /// Mirrors the underlying BLE connection state.
   Stream<bool> get connectionStream => _ble.connectionState;
@@ -48,116 +54,123 @@ class BleRepository {
 
   // ── Connection ─────────────────────────────────────────────
 
-  /// Connects to [device] and starts listening for status
-  /// notifications.
-  Future<void> connectToRobot(BleDevice device) async {
-    await _ble.connect(device);
-    _startListeningToStatus();
-  }
+  /// Connects to [device].
+  Future<void> connectToRobot(BleDevice device) => _ble.connect(device);
 
-  /// Disconnects and cleans up subscriptions.
+  /// Disconnects and resets the cached state.
   Future<void> disconnectFromRobot() async {
-    await _statusSub?.cancel();
-    _statusSub = null;
     await _ble.disconnect();
+    _updateState(RobotState.initial);
   }
 
-  // ── Commands ───────────────────────────────────────────────
+  // ── Commands (one per BLE characteristic) ───────────────────
 
-  /// Encodes [command] and writes it over BLE.
-  Future<void> sendCommand(RobotCommand command) async {
-    final bytes = _encodeCommand(command);
-    await _ble.writeCommand(bytes);
+  /// Sets the top & bottom flywheel motor RPM.
+  ///
+  /// Frame written to `BleConstants.RPM`:
+  ///  [ TOP_HIGH | TOP_LOW | BOTTOM_HIGH | BOTTOM_LOW | CHECKSUM ]
+  /// where TOP/BOTTOM are big-endian uint16, clamped to
+  /// `[motorSpeedMin, motorSpeedMax]`.
+  Future<void> setRpm(int topRpm, int bottomRpm) async {
+    final top = topRpm
+        .clamp(BleConstants.motorSpeedMin, BleConstants.motorSpeedMax)
+        .toInt();
+    final bottom = bottomRpm
+        .clamp(BleConstants.motorSpeedMin, BleConstants.motorSpeedMax)
+        .toInt();
+    final payload = [
+      (top >> 8) & 0xFF,
+      top & 0xFF,
+      (bottom >> 8) & 0xFF,
+      bottom & 0xFF,
+    ];
+    await _writeFrame(BleConstants.RPM, payload);
+    _updateState(_state.copyWith(topRpm: top, bottomRpm: bottom));
+  }
+
+  /// Sets the horizontal (pan) angle, in degrees.
+  ///
+  /// Frame written to `BleConstants.Hangle`:
+  ///  [ FLOAT32 (big-endian) | CHECKSUM ]
+  Future<void> setAngleH(double degrees) async {
+    final clamped = degrees
+        .clamp(BleConstants.horizontalAngleMin, BleConstants.horizontalAngleMax)
+        .toDouble();
+    await _writeFrame(BleConstants.Hangle, _floatToBytes(clamped));
+    _updateState(_state.copyWith(angleH: clamped));
+  }
+
+  /// Sets the vertical (tilt) angle, in degrees.
+  ///
+  /// Frame written to `BleConstants.Vangle`:
+  ///  [ FLOAT32 (big-endian) | CHECKSUM ]
+  Future<void> setAngleV(double degrees) async {
+    final clamped = degrees
+        .clamp(BleConstants.verticalAngleMin, BleConstants.verticalAngleMax)
+        .toDouble();
+    await _writeFrame(BleConstants.Vangle, _floatToBytes(clamped));
+    _updateState(_state.copyWith(angleV: clamped));
+  }
+
+  /// Fires the launcher. Written as an acknowledged write since
+  /// it's safety-critical (see `BleService.writeCharacteristic`
+  /// implementations).
+  Future<void> shoot() async {
+    await _ble.writeCharacteristic(BleConstants.Shoot, const [0x01]);
+    _updateState(_state.copyWith(isRunning: true));
+  }
+
+  /// Stops the launcher / motors. Acknowledged write, same as
+  /// [shoot].
+  Future<void> stop() async {
+    await _ble.writeCharacteristic(BleConstants.Stop, const [0x01]);
+    _updateState(_state.copyWith(isRunning: false, topRpm: 0, bottomRpm: 0));
+  }
+
+  /// Drives the robot via a normalised 2-axis joystick, each axis
+  /// clamped to `[joystickMin, joystickMax]` (-1.0..1.0).
+  ///
+  /// Frame written to `BleConstants.Movement`:
+  ///  [ X_FLOAT32 | Y_FLOAT32 (both big-endian) | CHECKSUM ]
+  Future<void> joystick(double x, double y) async {
+    final cx = x
+        .clamp(BleConstants.joystickMin, BleConstants.joystickMax)
+        .toDouble();
+    final cy = y
+        .clamp(BleConstants.joystickMin, BleConstants.joystickMax)
+        .toDouble();
+    final payload = [..._floatToBytes(cx), ..._floatToBytes(cy)];
+    await _writeFrame(BleConstants.Movement, payload);
+    _updateState(_state.copyWith(joystickX: cx, joystickY: cy));
   }
 
   // ── Private helpers ────────────────────────────────────────
 
-  void _startListeningToStatus() {
-    _statusSub?.cancel();
-    _statusSub = _ble.statusNotifications.listen((bytes) {
-      final state = _decodeState(bytes);
-      if (state != null) _robotStateController.add(state);
-    }, onError: _robotStateController.addError);
-  }
-
-  /// Encodes a [RobotCommand] into a compact byte frame:
-  ///
-  ///  [ CMD_TYPE | VALUE_HIGH | VALUE_LOW | CHECKSUM ]
-  ///
-  /// CMD_TYPE values:
-  ///  0x01 – top motor speed
-  ///  0x02 – bottom motor speed
-  ///  0x03 – vertical angle   (offset by +45 to keep positive)
-  ///  0x04 – horizontal angle (offset by +180)
-  ///  0x05 – launch
-  ///  0x06 – stop
-  List<int> _encodeCommand(RobotCommand command) {
-    int cmdType;
-    int value;
-
-    switch (command.type) {
-      case CommandType.topMotorSpeed:
-        cmdType = 0x01;
-        value = command.value.clamp(
-          BleConstants.motorSpeedMin,
-          BleConstants.motorSpeedMax,
-        );
-      case CommandType.bottomMotorSpeed:
-        cmdType = 0x02;
-        value = command.value.clamp(
-          BleConstants.motorSpeedMin,
-          BleConstants.motorSpeedMax,
-        );
-      case CommandType.verticalAngle:
-        cmdType = 0x03;
-        // Shift negative range to 0-based for a single unsigned byte.
-        value =
-            (command.value.clamp(
-              BleConstants.verticalAngleMin,
-              BleConstants.verticalAngleMax,
-            ) +
-            45);
-      case CommandType.horizontalAngle:
-        cmdType = 0x04;
-        value =
-            (command.value.clamp(
-              BleConstants.horizontalAngleMin,
-              BleConstants.horizontalAngleMax,
-            ) +
-            180);
-      case CommandType.launch:
-        cmdType = 0x05;
-        value = 0x00;
-      case CommandType.stop:
-        cmdType = 0x06;
-        value = 0x00;
+  void _updateState(RobotState next) {
+    _state = next;
+    if (!_robotStateController.isClosed) {
+      _robotStateController.add(_state);
     }
-
-    final high = (value >> 8) & 0xFF;
-    final low = value & 0xFF;
-    final checksum = (cmdType ^ high ^ low) & 0xFF;
-    return [cmdType, high, low, checksum];
   }
 
-  /// Decodes a 4-byte status frame from the robot.
-  ///
-  ///  [ IS_RUNNING | TOP_SPEED | BOTTOM_SPEED | CHECKSUM ]
-  RobotState? _decodeState(List<int> bytes) {
-    if (bytes.length < 4) return null;
+  /// Appends an XOR checksum byte to [payload] and writes the
+  /// resulting frame to [characteristicUuid].
+  Future<void> _writeFrame(String characteristicUuid, List<int> payload) async {
+    final frame = [...payload, _xorChecksum(payload)];
+    await _ble.writeCharacteristic(characteristicUuid, frame);
+  }
 
-    final checksum = (bytes[0] ^ bytes[1] ^ bytes[2]) & 0xFF;
-    if (checksum != bytes[3]) return null; // discard corrupt frame
+  static int _xorChecksum(List<int> bytes) =>
+      bytes.fold(0, (acc, b) => acc ^ b) & 0xFF;
 
-    return RobotState(
-      isRunning: bytes[0] == 0x01,
-      topMotorSpeed: bytes[1],
-      bottomMotorSpeed: bytes[2],
-    );
+  /// Encodes [value] as 4 big-endian bytes (IEEE-754 float32).
+  static List<int> _floatToBytes(double value) {
+    final bytes = ByteData(4)..setFloat32(0, value, Endian.big);
+    return bytes.buffer.asUint8List();
   }
 
   /// Frees stream resources.
   void dispose() {
-    _statusSub?.cancel();
     _robotStateController.close();
   }
 }

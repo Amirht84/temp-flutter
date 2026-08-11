@@ -1,7 +1,7 @@
 // ============================================================
-// FILE: bin/robot_cli.dart
+// FILE: test/core_test.dart
 // Standalone command-line harness for the core BLE logic.
-// Run with:  dart run bin/robot_cli.dart
+// Run with (from code/core):  dart run test/core_test.dart
 //
 // This talks to BleRepository exactly the way a real ViewModel
 // would, but backed by MockBleService instead of real hardware,
@@ -15,7 +15,6 @@ import 'dart:io';
 import '../lib/src/ble/ble_device.dart';
 import '../lib/src/ble/ble_repository.dart';
 import '../lib/src/ble/mock_ble_service.dart';
-import '../lib/src/models/robot_command.dart';
 import '../lib/src/models/robot_state.dart';
 
 Future<void> main() async {
@@ -27,7 +26,7 @@ Future<void> main() async {
 
   final stateSub = repo.robotStateStream.listen((state) {
     lastState = state;
-    print('📡 telemetry: $state');
+    print('📡 state: $state');
   });
   final connSub = repo.connectionStream.listen((connected) {
     print(connected ? '✅ connection established' : '⚠️  connection lost');
@@ -43,7 +42,7 @@ Future<void> main() async {
     if (line.isEmpty) continue;
     final parts = line.split(RegExp(r'\s+'));
     final cmd = parts.first.toLowerCase();
-    final arg = parts.length > 1 ? parts[1] : null;
+    final args = parts.skip(1).toList();
 
     try {
       switch (cmd) {
@@ -68,11 +67,11 @@ Future<void> main() async {
           }
 
         case 'connect':
-          if (arg == null || _lastScan.isEmpty) {
+          if (args.isEmpty || _lastScan.isEmpty) {
             print("Run 'scan' first, then 'connect <index>'.");
             break;
           }
-          final idx = int.tryParse(arg);
+          final idx = int.tryParse(args[0]);
           if (idx == null || idx < 1 || idx > _lastScan.length) {
             print('Invalid index.');
             break;
@@ -85,47 +84,49 @@ Future<void> main() async {
           await repo.disconnectFromRobot();
           connectedDevice = null;
 
-        case 'top':
+        case 'rpm':
           await _requireConnected(connectedDevice, () async {
-            final speed = _parseIntArg(arg, 'speed (0-100)');
-            if (speed == null) return;
-            await repo.sendCommand(RobotCommand.topMotorSpeed(speed));
-            print('Sent: top motor speed = $speed%');
+            final top = _parseIntArg(args, 0, 'top RPM (0-100)');
+            final bottom = _parseIntArg(args, 1, 'bottom RPM (0-100)');
+            if (top == null || bottom == null) return;
+            await repo.setRpm(top, bottom);
+            print('Sent: RPM top=$top bottom=$bottom');
           });
 
-        case 'bottom':
+        case 'angleh':
           await _requireConnected(connectedDevice, () async {
-            final speed = _parseIntArg(arg, 'speed (0-100)');
-            if (speed == null) return;
-            await repo.sendCommand(RobotCommand.bottomMotorSpeed(speed));
-            print('Sent: bottom motor speed = $speed%');
-          });
-
-        case 'vertical':
-          await _requireConnected(connectedDevice, () async {
-            final deg = _parseIntArg(arg, 'degrees (-45 to 45)');
+            final deg = _parseDoubleArg(args, 0, 'degrees (-180..180)');
             if (deg == null) return;
-            await repo.sendCommand(RobotCommand.verticalAngle(deg));
-            print('Sent: vertical angle = $deg°');
+            await repo.setAngleH(deg);
+            print('Sent: angle H = $deg°');
           });
 
-        case 'horizontal':
+        case 'anglev':
           await _requireConnected(connectedDevice, () async {
-            final deg = _parseIntArg(arg, 'degrees (-180 to 180)');
+            final deg = _parseDoubleArg(args, 0, 'degrees (-45..45)');
             if (deg == null) return;
-            await repo.sendCommand(RobotCommand.horizontalAngle(deg));
-            print('Sent: horizontal angle = $deg°');
+            await repo.setAngleV(deg);
+            print('Sent: angle V = $deg°');
           });
 
-        case 'launch':
+        case 'joystick':
           await _requireConnected(connectedDevice, () async {
-            await repo.sendCommand(const RobotCommand.launch());
-            print('Sent: LAUNCH');
+            final x = _parseDoubleArg(args, 0, 'x (-1.0..1.0)');
+            final y = _parseDoubleArg(args, 1, 'y (-1.0..1.0)');
+            if (x == null || y == null) return;
+            await repo.joystick(x, y);
+            print('Sent: joystick x=$x y=$y');
+          });
+
+        case 'shoot':
+          await _requireConnected(connectedDevice, () async {
+            await repo.shoot();
+            print('Sent: SHOOT');
           });
 
         case 'stop':
           await _requireConnected(connectedDevice, () async {
-            await repo.sendCommand(const RobotCommand.stop());
+            await repo.stop();
             print('Sent: STOP');
           });
 
@@ -165,14 +166,27 @@ Future<void> _requireConnected(
   await action();
 }
 
-int? _parseIntArg(String? raw, String hint) {
-  if (raw == null) {
+int? _parseIntArg(List<String> args, int index, String hint) {
+  if (index >= args.length) {
     print('Missing value. Expected $hint.');
     return null;
   }
-  final v = int.tryParse(raw);
+  final v = int.tryParse(args[index]);
   if (v == null) {
-    print("'$raw' is not a valid integer. Expected $hint.");
+    print("'${args[index]}' is not a valid integer. Expected $hint.");
+    return null;
+  }
+  return v;
+}
+
+double? _parseDoubleArg(List<String> args, int index, String hint) {
+  if (index >= args.length) {
+    print('Missing value. Expected $hint.');
+    return null;
+  }
+  final v = double.tryParse(args[index]);
+  if (v == null) {
+    print("'${args[index]}' is not a valid number. Expected $hint.");
     return null;
   }
   return v;
@@ -181,17 +195,17 @@ int? _parseIntArg(String? raw, String hint) {
 void _printHelp() {
   print('''
 Commands:
-  scan                 Scan for nearby robots (3s window)
-  connect <index>       Connect to a device from the last scan
-  disconnect            Disconnect from the current robot
-  top <0-100>            Set top motor speed
-  bottom <0-100>         Set bottom motor speed
-  vertical <-45..45>     Set vertical angle
-  horizontal <-180..180> Set horizontal angle
-  launch                 Fire the launch command
-  stop                   Fire the stop command
-  state                  Reminder of where live telemetry prints
-  help                   Show this list
-  quit / exit            Exit the CLI
+  scan                    Scan for nearby robots (3s window)
+  connect <index>          Connect to a device from the last scan
+  disconnect               Disconnect from the current robot
+  rpm <top> <bottom>       Set top & bottom motor RPM (0-100)
+  angleh <degrees>         Set horizontal angle (-180..180)
+  anglev <degrees>         Set vertical angle (-45..45)
+  joystick <x> <y>         Drive via joystick axes (-1.0..1.0)
+  shoot                    Fire the launcher
+  stop                     Stop the launcher / motors
+  state                    Print the last-known commanded state
+  help                     Show this list
+  quit / exit              Exit the CLI
 ''');
 }
