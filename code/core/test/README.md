@@ -11,4 +11,7 @@ CLI commands: `scan`, `connect <index>`, `disconnect`, `rpm <top> <bottom>`,
 Or run the minimal scripted example:
     dart run example/core_example.dart
 
-For testing against real hardware over Bluetooth, see `README_REAL_TEST.md`.
+For testing against real hardware over Bluetooth (same commands, real
+robot), run `flutter run -d linux -t test/real_robot_cli.dart` (or
+`macos`/`windows`) — see `README_REAL_TEST.md` for details, platform
+support, and the phone-only UI harness.

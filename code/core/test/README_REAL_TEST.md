@@ -5,6 +5,63 @@ This adds a second, **real** `BleService` implementation
 Same contract, so `BleRepository` doesn't change at all — you're
 literally swapping one constructor argument.
 
+There are two harnesses that use it:
+
+| File | What it is | Where it works |
+|------|------------|-----------------|
+| `test/real_robot_cli.dart` | Terminal CLI — same commands as `core_test.dart` (`scan`, `connect`, `rpm`, ...), typed into your terminal | **Desktop only** (Linux/macOS/Windows, via `flutter_blue_plus` 2.x — see below). Won't accept input on Android/iOS. |
+| `test/main_debug.dart` + `test/debug_robot_screen.dart` | Throwaway Flutter UI with a Scan button, device list, sliders, Launch/Stop | Any platform, including phones |
+
+If you're on a laptop with Bluetooth (or a Linux/macOS box) near the
+robot, `real_robot_cli.dart` is the fastest way to poke at it. If your
+robot is only reachable from a phone, use the UI harness instead —
+`flutter run` does **not** forward your terminal's stdin into an
+app process running on a physical Android/iOS device, so a
+terminal-driven CLI can't accept input there.
+
+## 0. Run the real CLI test
+
+From `code/core`, with a device attached/selected that has a real
+Bluetooth radio:
+
+```bash
+flutter pub get
+flutter run -d linux  -t test/real_robot_cli.dart    # or: macos
+flutter run -d windows -t test/real_robot_cli.dart   # after step 0b below
+```
+
+You'll get the exact same command set as the mock CLI (`help`,
+`scan`, `connect <index>`, `disconnect`, `rpm`, `angleh`, `anglev`,
+`joystick`, `shoot`, `stop`, `state`, `quit`) — except every command
+now goes out over real Bluetooth to `FlutterBluePlusService`, and
+`scan` only shows devices advertising `BleConstants.robotServiceUuid`.
+
+It calls `ensureBluetoothOn()` on startup and exits with a clear
+error if the adapter isn't on or the platform has no Bluetooth radio
+— fix that first before scanning.
+
+### 0b. Windows note
+
+`flutter_blue_plus` versions before 2.1.0 have **no** native Windows
+backend. Don't use the community `flutter_blue_plus_windows` package
+as a workaround — it hasn't tracked `flutter_blue_plus`'s internal API
+and fails to build against current versions (`BmBluetoothCharacteristic
+not found`, etc.). Instead, this package is pinned to
+`flutter_blue_plus: ^2.1.0`+, which ships **official** Windows support
+out of the box via the endorsed `flutter_blue_plus_winrt` plugin — no
+extra dependency or import changes needed; `flutter pub get` pulls it
+in automatically when targeting Windows.
+
+### 0c. License note
+
+`flutter_blue_plus` 2.0+ moved to the **FlutterBluePlus License**:
+free for personal/nonprofit/educational use, but a **paid commercial
+license is required for for-profit use**. `BluetoothDevice.connect()`
+now takes a required `license:` parameter — `FlutterBluePlusService`
+passes `License.nonprofit`. If this project becomes a commercial
+product, revisit that (see `FlutterBluePlusService.connect()`) and
+purchase a commercial license.
+
 ## 1. Add the dependency
 
 In your real Flutter project (not the CLI package):
@@ -103,9 +160,10 @@ Call that once before your first `_scan()` — e.g. at the top of
 
 ## 4. Run it — on a real phone
 
-BLE doesn't work in an emulator/simulator or on desktop — you need an
-actual phone with Bluetooth, near the actual robot, powered on and
-advertising:
+BLE doesn't work in an emulator/simulator — you need an actual phone
+with Bluetooth, near the actual robot, powered on and advertising
+(or, per step 0 above, a Bluetooth-equipped desktop running
+`real_robot_cli.dart` instead of this UI):
 
 ```bash
 flutter run -t lib/main_debug.dart

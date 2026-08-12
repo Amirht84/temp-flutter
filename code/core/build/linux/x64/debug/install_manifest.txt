@@ -1,0 +1,11 @@
+/data/code/git_hub/TennisShooterRobot-Application/code/core/build/linux/x64/debug/bundle/core
+/data/code/git_hub/TennisShooterRobot-Application/code/core/build/linux/x64/debug/bundle/data/icudtl.dat
+/data/code/git_hub/TennisShooterRobot-Application/code/core/build/linux/x64/debug/bundle/lib/libflutter_linux_gtk.so
+/data/code/git_hub/TennisShooterRobot-Application/code/core/build/linux/x64/debug/bundle/data/flutter_assets/AssetManifest.bin
+/data/code/git_hub/TennisShooterRobot-Application/code/core/build/linux/x64/debug/bundle/data/flutter_assets/FontManifest.json
+/data/code/git_hub/TennisShooterRobot-Application/code/core/build/linux/x64/debug/bundle/data/flutter_assets/kernel_blob.bin
+/data/code/git_hub/TennisShooterRobot-Application/code/core/build/linux/x64/debug/bundle/data/flutter_assets/NativeAssetsManifest.json
+/data/code/git_hub/TennisShooterRobot-Application/code/core/build/linux/x64/debug/bundle/data/flutter_assets/NOTICES.Z
+/data/code/git_hub/TennisShooterRobot-Application/code/core/build/linux/x64/debug/bundle/data/flutter_assets/shaders/ink_sparkle.frag
+/data/code/git_hub/TennisShooterRobot-Application/code/core/build/linux/x64/debug/bundle/data/flutter_assets/shaders/stretch_effect.frag
+/data/code/git_hub/TennisShooterRobot-Application/code/core/build/linux/x64/debug/bundle/data/flutter_assets/version.json
