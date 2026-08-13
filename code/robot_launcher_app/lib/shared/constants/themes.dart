@@ -65,5 +65,5 @@ abstract final class Dimensions {
   static const radioInnerCircleFactor = 0.25;
   static const radioArmThickness = 7.0;
 
-  static const titleContextSize = 150.0;
+  static const titleContextSize = 10.0;
 }

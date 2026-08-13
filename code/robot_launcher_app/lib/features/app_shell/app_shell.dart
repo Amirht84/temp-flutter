@@ -1,9 +1,13 @@
+//import 'package:core/core.dart';
 import 'package:flutter/material.dart';
 import 'widgets/app_bar_shell.dart';
 import 'package:robot_launcher_app/features/home/home.dart';
 import 'package:robot_launcher_app/features/manual/manual.dart';
 import 'package:robot_launcher_app/shared/constants/themes.dart';
 import 'widgets/bottom_navigation_bar_shell.dart';
+import 'app_shell_view_model.dart';
+import 'package:robot_launcher_app/shared/constants/states.dart';
+
 class MainPage extends StatefulWidget {
   const MainPage({super.key});
 
@@ -13,6 +17,9 @@ class MainPage extends StatefulWidget {
 
 class _MainPageState extends State<MainPage> {
   late int currentIndex;
+//  late final BleRepository repo;
+//  late final AppShellViewModel viewModel;
+  late RobotConnectionState _connectionState;
   final pages = const [
     ManualPage(),
     ComingSoonPage(),
@@ -22,15 +29,17 @@ class _MainPageState extends State<MainPage> {
   @override
   void initState() {
     currentIndex = 0;
+    _connectionState = RobotConnectionState.connected;
+//    repo = BleRepository(bleService: throw UnimplementedError());
+//    viewModel = AppShellViewModel(repo);
     super.initState();
   }
-
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Palet.backGround,
-      appBar: AppBarShell(),
+      appBar: AppBarShell(connectionState: _connectionState,),
       body: Padding(
         padding:  EdgeInsets.symmetric(vertical: Dimensions.bodyPadding),
         child: AnimatedSwitcher(
