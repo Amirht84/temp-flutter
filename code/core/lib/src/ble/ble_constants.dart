@@ -16,7 +16,7 @@ class BleConstants {
   static const String RPM = 'bb400002-2fe3-48bc-baa7-fb92a0611f6a'; // set RPM
 
   /// Notify characteristic for robot status updates.
-  static const String Hangle =
+  static const String Mode =
       'bb400003-2fe3-48bc-baa7-fb92a0611f6a'; // Horizontal angle
 
   static const String Vangle =
@@ -25,7 +25,7 @@ class BleConstants {
   static const String Shoot =
       'bb400005-2fe3-48bc-baa7-fb92a0611f6a'; // shooting
 
-  static const String Stop = 'bb400006-2fe3-48bc-baa7-fb92a0611f6a'; // stop
+  static const String UNUSED = 'bb400006-2fe3-48bc-baa7-fb92a0611f6a'; // stop
 
   static const String Movement =
       'bb400007-2fe3-48bc-baa7-fb92a0611f6a'; // Movement
@@ -33,7 +33,7 @@ class BleConstants {
   static const int motorSpeedMin = 0;
   static const int motorSpeedMax = 100; // percent (top & bottom RPM)
 
-  static const double verticalAngleMin = -45;
+  static const double verticalAngleMin = 10; // degrees
   static const double verticalAngleMax = 45; // degrees
 
   static const double horizontalAngleMin = -180;

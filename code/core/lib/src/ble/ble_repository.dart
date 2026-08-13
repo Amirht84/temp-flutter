@@ -75,30 +75,37 @@ class BleRepository {
     final top = topRpm
         .clamp(BleConstants.motorSpeedMin, BleConstants.motorSpeedMax)
         .toInt();
+
     final bottom = bottomRpm
         .clamp(BleConstants.motorSpeedMin, BleConstants.motorSpeedMax)
         .toInt();
+
     final payload = [
-      (top >> 8) & 0xFF,
-      top & 0xFF,
-      (bottom >> 8) & 0xFF,
-      bottom & 0xFF,
+      ..._intToBytes(top),
+      ..._intToBytes(bottom),
     ];
+
     await _writeFrame(BleConstants.RPM, payload);
-    _updateState(_state.copyWith(topRpm: top, bottomRpm: bottom));
+
+    _updateState(
+      _state.copyWith(
+        topRpm: top,
+        bottomRpm: bottom,
+      ),
+    );
   }
 
   /// Sets the horizontal (pan) angle, in degrees.
   ///
   /// Frame written to `BleConstants.Hangle`:
   ///  [ FLOAT32 (big-endian) | CHECKSUM ]
-  Future<void> setAngleH(double degrees) async {
-    final clamped = degrees
-        .clamp(BleConstants.horizontalAngleMin, BleConstants.horizontalAngleMax)
-        .toDouble();
-    await _writeFrame(BleConstants.Hangle, _floatToBytes(clamped));
-    _updateState(_state.copyWith(angleH: clamped));
-  }
+  // Future<void> setAngleH(double degrees) async {
+  //   final clamped = degrees
+  //       .clamp(BleConstants.horizontalAngleMin, BleConstants.horizontalAngleMax)
+  //       .toDouble();
+  //   await _writeFrame(BleConstants.Hangle, _floatToBytes(clamped));
+  //   _updateState(_state.copyWith(angleH: clamped));
+  // }
 
   /// Sets the vertical (tilt) angle, in degrees.
   ///
@@ -123,7 +130,7 @@ class BleRepository {
   /// Stops the launcher / motors. Acknowledged write, same as
   /// [shoot].
   Future<void> stop() async {
-    await _ble.writeCharacteristic(BleConstants.Stop, const [0x01]);
+    await _ble.writeCharacteristic(BleConstants.UNUSED, const [0x01]);
     _updateState(_state.copyWith(isRunning: false, topRpm: 0, bottomRpm: 0));
   }
 
@@ -132,16 +139,22 @@ class BleRepository {
   ///
   /// Frame written to `BleConstants.Movement`:
   ///  [ X_FLOAT32 | Y_FLOAT32 (both big-endian) | CHECKSUM ]
-  Future<void> joystick(double x, double y) async {
-    final cx = x
-        .clamp(BleConstants.joystickMin, BleConstants.joystickMax)
+  Future<void> joystick(double x, double y, double angleH) async {
+    final cx =
+        x.clamp(BleConstants.joystickMin, BleConstants.joystickMax).toDouble();
+    final cy =
+        y.clamp(BleConstants.joystickMin, BleConstants.joystickMax).toDouble();
+
+    final ch = angleH
+        .clamp(BleConstants.horizontalAngleMin, BleConstants.horizontalAngleMax)
         .toDouble();
-    final cy = y
-        .clamp(BleConstants.joystickMin, BleConstants.joystickMax)
-        .toDouble();
-    final payload = [..._floatToBytes(cx), ..._floatToBytes(cy)];
+    final payload = [
+      ..._floatToBytes(cx),
+      ..._floatToBytes(cy),
+      ..._floatToBytes(ch),
+    ];
     await _writeFrame(BleConstants.Movement, payload);
-    _updateState(_state.copyWith(joystickX: cx, joystickY: cy));
+    _updateState(_state.copyWith(joystickX: cx, joystickY: cy, angleH: ch));
   }
 
   // ── Private helpers ────────────────────────────────────────
@@ -165,7 +178,13 @@ class BleRepository {
 
   /// Encodes [value] as 4 big-endian bytes (IEEE-754 float32).
   static List<int> _floatToBytes(double value) {
-    final bytes = ByteData(4)..setFloat32(0, value, Endian.big);
+    final bytes = ByteData(4)..setFloat32(0, value, Endian.little);
+    return bytes.buffer.asUint8List();
+  }
+
+  static List<int> _intToBytes(int value) {
+    final bytes = ByteData(2);
+    bytes.setUint16(0, value, Endian.little);
     return bytes.buffer.asUint8List();
   }
 

@@ -3,10 +3,19 @@ description: Core robot logic and BLE communication.
 version: 0.1.0
 
 environment:
-  sdk: ^3.8.0
+  sdk: '>=3.0.0 <4.0.0'
 
 dependencies:
-  flutter_blue_plus: ^1.35.5
+  flutter:
+    sdk: flutter
+  flutter_blue_plus: ^2.1.0
+  permission_handler: ^11.3.1
+  flutter_joystick: ^0.2.2
 
 dev_dependencies:
+  flutter_test:
+    sdk: flutter
   test: ^1.25.0
+
+flutter:
+  uses-material-design: true

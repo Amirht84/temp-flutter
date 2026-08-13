@@ -41,7 +41,7 @@ class FlutterBluePlusService implements BleService {
   /// written unacknowledged for lower latency.
   static const _criticalCharacteristics = {
     BleConstants.Shoot,
-    BleConstants.Stop,
+    BleConstants.UNUSED,
   };
 
   /// Call once (e.g. on app start) and await before scanning, so you get
@@ -71,6 +71,15 @@ class FlutterBluePlusService implements BleService {
     _scanSub = fbp.FlutterBluePlus.onScanResults.listen((results) {
       for (final r in results) {
         final id = r.device.remoteId.str;
+        // DEBUG: print every device we see and exactly what service UUIDs
+        // (if any) came through in its advertisement packet. This tells us
+        // whether the Pi's adv data actually contains the service UUID,
+        // independent of the withServices scan filter below.
+        // ignore: avoid_print
+        print(
+          'SCAN SEEN: id=$id name="${r.advertisementData.advName}" '
+          'rssi=${r.rssi} advServiceUuids=${r.advertisementData.serviceUuids}',
+        );
         if (seenIds.add(id)) {
           final name = r.device.platformName.isNotEmpty
               ? r.device.platformName
@@ -81,20 +90,36 @@ class FlutterBluePlusService implements BleService {
     }, onError: controller.addError);
     fbp.FlutterBluePlus.cancelWhenScanComplete(_scanSub!);
 
-    // Filter by our robot's service UUID so we don't see every random BLE
-    // device (fridges, headphones, etc.) — same UUID used in ble_constants.
+    // NOTE: `isScanning` is a broadcast stream that replays its *current*
+    // value to a new listener. If we listen right after firing (not
+    // awaiting) startScan(), the adapter may not have flipped to "scanning"
+    // yet, so the very first value we see can still be `false` — closing
+    // the stream instantly, before any results arrive. Guard against that
+    // by only closing once we've actually observed `true` first.
+    bool scanStarted = false;
+    StreamSubscription<bool>? isScanningSub;
+    isScanningSub = fbp.FlutterBluePlus.isScanning.listen((scanning) {
+      if (scanning) {
+        scanStarted = true;
+      } else if (scanStarted) {
+        isScanningSub?.cancel();
+        controller.close();
+      }
+    });
+
+    // DEBUG: withServices filter temporarily disabled to confirm whether
+    // the Pi's advertisement actually carries the service UUID. Once
+    // confirmed, either restore the filter (if the UUID shows up in the
+    // logged advServiceUuids above) or switch to filtering by name/id
+    // client-side instead (if it doesn't).
     fbp.FlutterBluePlus.startScan(
-      withServices: [_serviceUuid],
+      // withServices: [_serviceUuid],
       timeout: timeout,
     ).catchError((Object e) => controller.addError(e));
 
-    fbp.FlutterBluePlus.isScanning
-        .where((scanning) => !scanning)
-        .first
-        .then((_) => controller.close());
-
     controller.onCancel = () async {
       await _scanSub?.cancel();
+      await isScanningSub?.cancel();
       await fbp.FlutterBluePlus.stopScan();
     };
 
@@ -118,7 +143,10 @@ class FlutterBluePlusService implements BleService {
       );
     });
 
-    await target.connect(timeout: const Duration(seconds: 15));
+    await target.connect(
+      timeout: const Duration(seconds: 15),
+      license: fbp.License.nonprofit,
+    );
 
     final services = await target.discoverServices();
     final robotService = services.firstWhere(
@@ -140,10 +168,10 @@ class FlutterBluePlusService implements BleService {
     // later on the first write.
     const expected = {
       'RPM': BleConstants.RPM,
-      'Hangle': BleConstants.Hangle,
+      'Hangle': BleConstants.Movement,
       'Vangle': BleConstants.Vangle,
       'Shoot': BleConstants.Shoot,
-      'Stop': BleConstants.Stop,
+      'Stop': BleConstants.UNUSED,
       'Movement': BleConstants.Movement,
     };
     for (final entry in expected.entries) {
