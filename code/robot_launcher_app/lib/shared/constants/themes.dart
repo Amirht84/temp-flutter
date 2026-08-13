@@ -30,6 +30,7 @@ abstract final class Palet {
   static const warning = Color(0xFFF5A623);
   static const error = Color(0xFFE5484D);
   static const info = Color(0xFF3B82F6);
+  static const pending = Color(0xFFF5C542);
 }
 
 abstract final class Dimensions {
