@@ -44,18 +44,34 @@ class BleRepository {
   /// Mirrors the underlying BLE connection state.
   Stream<bool> get connectionStream => _ble.connectionState;
 
-  // ── Scanning ───────────────────────────────────────────────
-
-  /// Returns a stream of nearby [BleDevice]s.
-  Stream<BleDevice> scanForRobots() =>
-      _ble.scanForDevices(timeout: BleConstants.scanTimeout);
+// ── Scanning ───────────────────────────────────────────────
+  /// Scans for nearby devices and returns the first [BleDevice] matching
+  /// the target service UUID defined in [BleConstants.robotServiceUuid].
+  ///
+  /// Returns `null` if no matching device is found before the scan completes.
+  Future<BleDevice?> scanForRobots() async {
+    try {
+      final device = await _ble
+          .scanForDevices(timeout: BleConstants.scanTimeout)
+          .firstWhere(
+            (device) => device.id == BleConstants.robotServiceUuid,
+          );
+      return device;
+    } catch (_) {
+      // Returns null if firstWhere times out or completes without finding a match
+      return null;
+    }
+  }
 
   Future<void> stopScan() => _ble.stopScan();
 
   // ── Connection ─────────────────────────────────────────────
 
-  /// Connects to [device].
-  Future<void> connectToRobot(BleDevice device) => _ble.connect(device);
+  /// Connects to [device] and returns a stream notifying connection state changes.
+  Stream<bool> connectToRobot(BleDevice device) {
+    _ble.connect(device);
+    return connectionStream;
+  }
 
   /// Disconnects and resets the cached state.
   Future<void> disconnectFromRobot() async {
