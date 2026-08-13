@@ -1,5 +1,7 @@
 //import 'package:core/core.dart';
 import 'package:flutter/material.dart';
+import 'package:robot_launcher_app/features/play/play.dart';
+import 'package:robot_launcher_app/features/scenario/scenario.dart';
 import 'widgets/app_bar_shell.dart';
 import 'package:robot_launcher_app/features/home/home.dart';
 import 'package:robot_launcher_app/features/manual/manual.dart';
@@ -21,10 +23,10 @@ class _MainPageState extends State<MainPage> {
 //  late final AppShellViewModel viewModel;
   late RobotConnectionState _connectionState;
   final pages = const [
+    HomePage(),
+    PlayPage(),
     ManualPage(),
-    ComingSoonPage(),
-    ComingSoonPage(),
-    ComingSoonPage(),
+    ScenarioPage(),
   ];
   @override
   void initState() {
