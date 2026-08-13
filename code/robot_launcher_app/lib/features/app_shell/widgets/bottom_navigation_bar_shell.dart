@@ -30,12 +30,12 @@ class BottomNavigationBarShell extends StatelessWidget {
             label: 'play',
           ),
           NavigationDestination(
-            icon: Icon(Icons.abc),
-            label: 'temp',
+            icon: Icon(Icons.menu_book),
+            label: 'manual',
           ),  
           NavigationDestination(
-            icon: Icon(Icons.abc),
-            label: 'temp'
+            icon: Icon(Icons.account_tree_outlined),
+            label: 'scenario'
           ),
         ],
       ),
