@@ -9,10 +9,14 @@
 import 'dart:async';
 import 'dart:typed_data';
 
+import 'package:flutter_blue_plus/flutter_blue_plus.dart'; // added for Bluetooth state
+import 'package:permission_handler/permission_handler.dart'; // added for permissions
+
 import '../models/robot_state.dart';
 import 'ble_constants.dart';
 import 'ble_device.dart';
 import 'ble_service.dart';
+import 'flutter_blue_plus_service.dart';
 
 /// Mediates between [BleService] (hardware) and the ViewModel
 /// (business logic).
@@ -21,12 +25,10 @@ import 'ble_service.dart';
 ///  • Encodes each control action into the byte frame expected
 ///    by its own BLE characteristic (see `BleConstants`).
 ///  • Tracks the last-commanded [RobotState] locally, since the
-///    current protocol is write-only (no telemetry notify).
+///    current protocol is fluwrite-only (no telemetry notify).
 ///  • Manages scan / connection life-cycle.
 class BleRepository {
-  BleRepository({required BleService bleService}) : _ble = bleService;
-
-  final BleService _ble;
+  final _ble = FlutterBluePlusService();
 
   // ── Internal state ─────────────────────────────────────────
   final _robotStateController = StreamController<RobotState>.broadcast();
@@ -44,7 +46,45 @@ class BleRepository {
   /// Mirrors the underlying BLE connection state.
   Stream<bool> get connectionStream => _ble.connectionState;
 
-// ── Scanning ───────────────────────────────────────────────
+  BleService get Ble => _ble;
+
+  // ── Permissions & Bluetooth state ─────────────────────────
+
+  /// Requests the permissions required for BLE scanning and connection.
+  /// Returns `true` if all required permissions are granted, otherwise `false`.
+  Future<bool> requestPermissions() async {
+    final status = await [
+      Permission.bluetoothScan,
+      Permission.bluetoothConnect,
+      Permission.location,
+    ].request();
+
+    // On Android, location permission is often required for BLE scanning.
+    // You can decide whether to require it as well.
+    final bluetoothGranted =
+        status[Permission.bluetoothScan]!.isGranted &&
+        status[Permission.bluetoothConnect]!.isGranted;
+
+    // Optionally also check location (uncomment if needed):
+    // final locationGranted = status[Permission.location]!.isGranted;
+    // return bluetoothGranted && locationGranted;
+    return bluetoothGranted;
+  }
+
+  /// Checks whether the device's Bluetooth adapter is powered on.
+  Future<bool> isBluetoothOn() async {
+    return await FlutterBluePlus.isOn;
+  }
+
+  /// Convenience method that ensures both permissions are granted
+  /// and Bluetooth is on. Returns `true` only if both conditions are met.
+  Future<bool> ensurePermissionsAndBluetooth() async {
+    final permissionsOk = await requestPermissions();
+    if (!permissionsOk) return false;
+    return await isBluetoothOn();
+  }
+
+  // ── Scanning ───────────────────────────────────────────────
   /// Scans for nearby devices and returns the first [BleDevice] matching
   /// the target service UUID defined in [BleConstants.robotServiceUuid].
   ///
@@ -53,9 +93,7 @@ class BleRepository {
     try {
       final device = await _ble
           .scanForDevices(timeout: BleConstants.scanTimeout)
-          .firstWhere(
-            (device) => device.id == BleConstants.robotServiceUuid,
-          );
+          .firstWhere((device) => device.id == BleConstants.robotServiceUuid);
       return device;
     } catch (_) {
       // Returns null if firstWhere times out or completes without finding a match
@@ -96,19 +134,11 @@ class BleRepository {
         .clamp(BleConstants.motorSpeedMin, BleConstants.motorSpeedMax)
         .toInt();
 
-    final payload = [
-      ..._intToBytes(top),
-      ..._intToBytes(bottom),
-    ];
+    final payload = [..._intToBytes(top), ..._intToBytes(bottom)];
 
     await _writeFrame(BleConstants.RPM, payload);
 
-    _updateState(
-      _state.copyWith(
-        topRpm: top,
-        bottomRpm: bottom,
-      ),
-    );
+    _updateState(_state.copyWith(topRpm: top, bottomRpm: bottom));
   }
 
   /// Sets the horizontal (pan) angle, in degrees.
@@ -156,10 +186,12 @@ class BleRepository {
   /// Frame written to `BleConstants.Movement`:
   ///  [ X_FLOAT32 | Y_FLOAT32 (both big-endian) | CHECKSUM ]
   Future<void> joystick(double x, double y, double angleH) async {
-    final cx =
-        x.clamp(BleConstants.joystickMin, BleConstants.joystickMax).toDouble();
-    final cy =
-        y.clamp(BleConstants.joystickMin, BleConstants.joystickMax).toDouble();
+    final cx = x
+        .clamp(BleConstants.joystickMin, BleConstants.joystickMax)
+        .toDouble();
+    final cy = y
+        .clamp(BleConstants.joystickMin, BleConstants.joystickMax)
+        .toDouble();
 
     final ch = angleH
         .clamp(BleConstants.horizontalAngleMin, BleConstants.horizontalAngleMax)
