@@ -9,7 +9,6 @@ import 'package:robot_launcher_app/shared/constants/themes.dart';
 import 'widgets/bottom_navigation_bar_shell.dart';
 import 'app_shell_view_model.dart';
 import 'package:robot_launcher_app/shared/constants/states.dart';
-import 'package:core/core.dart';
 
 class MainPage extends StatefulWidget {
   const MainPage({super.key});
