@@ -339,8 +339,8 @@ packages:
     dependency: "direct main"
     description:
       path: rotary_knob
-      ref: "v0.1.0"
-      resolved-ref: "16f3b927c87d98a0366e1b41f627d07279528f3d"
+      ref: "v0.1.1"
+      resolved-ref: db03585fa25e05f3f1226ed07a6eb27fc1f6c7ed
       url: "https://github.com/Amirht84/flutter_rotary_knob.git"
     source: git
     version: "0.1.0"

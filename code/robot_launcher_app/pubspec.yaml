@@ -12,7 +12,7 @@ dependencies:
   rotary_knob:
     git:
       url: https://github.com/Amirht84/flutter_rotary_knob.git
-      ref: v0.1.0
+      ref: v0.1.1
       path: rotary_knob
   flutter_svg: ^2.2.1
   core:
