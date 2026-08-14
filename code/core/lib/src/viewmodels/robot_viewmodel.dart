@@ -1,4 +1,4 @@
-// ============================================================
+/*// ============================================================
 // FILE: lib/src/viewmodels/robot_viewmodel.dart
 // The single ViewModel consumed by the UI layer.
 // It holds all mutable UI state and exposes command methods.
@@ -180,3 +180,4 @@ class RobotViewModel extends ChangeNotifier {
     super.dispose();
   }
 }
+*/
