@@ -16,6 +16,7 @@ class ManualViewModel extends ChangeNotifier {
 
   final BleRepository _repo;
   Future<void> launch() async {
+    //Unimplemented
   }
   Future<void> setUpMotor(int rpm) async {
     _topRpm = rpm;
@@ -44,6 +45,8 @@ class ManualViewModel extends ChangeNotifier {
     _horizonAngle = angle;
     pendingHorizonAngle = true;
     notifyListeners();
-    throw UnimplementedError();
+    await _repo.setAngleH(angleH: _horizonAngle);
+    pendingHorizonAngle = false;
+    notifyListeners();
   }
 }

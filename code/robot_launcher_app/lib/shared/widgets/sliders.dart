@@ -8,8 +8,10 @@ class FlexibleSlider extends StatefulWidget {
     required this.minValue,
     required this.maxValue,
     required this.title,
+    required this.onChangedEnd,
     this.isVertical = false,
-    this.unit = ""
+    this.isDisabled = false,
+    this.unit = "",
   });
 
   final double minValue;
@@ -17,6 +19,9 @@ class FlexibleSlider extends StatefulWidget {
   final String title;
   final bool isVertical;
   final String unit;
+  final bool isDisabled;
+  final ValueChanged<double> onChangedEnd;
+  
   @override
   State<FlexibleSlider> createState() => _FlexibleSliderState();
 }
@@ -28,7 +33,6 @@ class _FlexibleSliderState extends State<FlexibleSlider> {
   @override
   void initState() {
     super.initState();
-
     value = (widget.minValue + widget.maxValue) / 2;
   }
 
@@ -44,6 +48,8 @@ class _FlexibleSliderState extends State<FlexibleSlider> {
           value = newValue;
         });
       },
+      isDisabled: widget.isDisabled,
+      onChangedEnd: widget.onChangedEnd,
       unit: widget.unit
     );
 
@@ -71,8 +77,10 @@ class _Slider extends StatelessWidget {
     required this.maxValue,
     required this.onChanged,
     required this.value,
+    this.isDisabled = false,
     this.unit = "",
-    this.isVertical = false
+    this.isVertical = false,
+    required this.onChangedEnd,
   });
   final double minValue;
   final double maxValue;
@@ -80,6 +88,8 @@ class _Slider extends StatelessWidget {
   final double value;
   final ValueChanged<double> onChanged;
   final bool isVertical;
+  final ValueChanged<double> onChangedEnd;
+  final bool isDisabled;
   @override
   Widget build(BuildContext context) {
 
@@ -104,12 +114,13 @@ class _Slider extends StatelessWidget {
           RotatedBox(
             quarterTurns: isVertical ? 3 : 0,
             child: Slider(
+              onChangeEnd: isDisabled ? null: onChangedEnd,
               padding: EdgeInsets.zero,
               value: value,
               min: minValue,
               max: maxValue,
-              activeColor: Palet.primaryAccent,
-              onChanged: onChanged,
+              activeColor: isDisabled ? Palet.disabled : Palet.primaryAccent,
+              onChanged: isDisabled ? null : onChanged,
             ),
           ),
           Transform.translate(

@@ -23,12 +23,6 @@ class _MainPageState extends State<MainPage> {
   late final BleRepository _repo;
   late final AppShellViewModel _viewModel;
   late RobotConnectionState _connectionState;
-  final pages = const [
-    HomePage(),
-    PlayPage(),
-    ManualPage(),
-    ScenarioPage(),
-  ];
   @override
   void initState() {
     currentIndex = 0;
@@ -59,6 +53,12 @@ class _MainPageState extends State<MainPage> {
 
   @override
   Widget build(BuildContext context) {
+    final pages = [
+      HomePage(),
+      PlayPage(),
+      ManualPage(repo: _repo, isDisabled: !_viewModel.isConnected),
+      ScenarioPage(),
+    ];
     return Scaffold(
       backgroundColor: Palet.backGround,
       appBar: AppBarShell(

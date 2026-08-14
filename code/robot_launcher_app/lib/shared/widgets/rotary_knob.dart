@@ -10,15 +10,20 @@ class RotaryKnobCard extends StatefulWidget {
     required this.minValue,
     required this.maxValue,
     required this.unit,
+    required this.isDisabled,
+    required this.onChangedEnd,
   });
 
   final String title;
   final double minValue;
   final double maxValue;
   final String unit;
+  final bool isDisabled;
 
+  final ValueChanged<double> onChangedEnd;
   @override
   State<StatefulWidget> createState() => _RotaryKnobCardState();
+
 }
 
 class _RotaryKnobCardState extends State<RotaryKnobCard> {
@@ -47,21 +52,22 @@ class _RotaryKnobCardState extends State<RotaryKnobCard> {
                 minValue: -25,
                 startAngle: -140,
                 sweepAngle: 100,
-                onChanged: (newValue) => setState(() => value = newValue),
-                style: const RotaryKnobStyle(
+                onChangedEnd: widget.isDisabled ? null : widget.onChangedEnd,
+                onChanged: widget.isDisabled ? (_){} : (newValue) => setState(() => value = newValue),
+                style: RotaryKnobStyle(
                   normal: RotaryKnobAppearance(
                     shadowBlurRadius: 1,
                     majorDivisions: 2,
                     minorDivisions: 10,
-                    indicatorColor: Palet.primaryAccent,
-                    boundryColor: Palet.primaryAccent,
+                    indicatorColor: widget.isDisabled ? Palet.disabled : Palet.primaryAccent,
+                    boundryColor: widget.isDisabled ? Palet.disabled : Palet.primaryAccent,
                   ),
                   pressed: RotaryKnobAppearance(
-                    shadowBlurRadius: 10,
+                    shadowBlurRadius: widget.isDisabled ? 1 : 10,
                     majorDivisions: 2,
                     minorDivisions: 10,
-                    indicatorColor: Palet.primaryAccent,
-                    boundryColor: Palet.primaryAccent,
+                    indicatorColor: widget.isDisabled ? Palet.disabled : Palet.primaryAccent,
+                    boundryColor: widget.isDisabled ? Palet.disabled : Palet.primaryAccent,
                   ),
                 ),
               ),

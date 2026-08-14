@@ -7,40 +7,48 @@ class GreenButton extends StatelessWidget {
     super.key,
     required this.text,
     required this.onPressed,
-    required this.iconPath
+    required this.iconPath,
+    this.isDisabled = false,
   });
   final String text;
   final VoidCallback onPressed;
   final String iconPath;
+  final bool isDisabled;
 
   @override
   Widget build(BuildContext context) {
     return Padding(
       padding: EdgeInsets.symmetric(vertical: Dimensions.buttonPadding),
       child: FractionallySizedBox(
-      widthFactor: Dimensions.buttonWidthFactor,
-      child: SizedBox(
-        height: Dimensions.buttonHeight,
-        child: ElevatedButton(
-          style: ElevatedButton.styleFrom(
-            backgroundColor: Palet.primaryAccent,
-            textStyle: TextStyle(
-              fontWeight: FontWeight.bold,
-              fontSize: Dimensions.buttonFontSize,
+        widthFactor: Dimensions.buttonWidthFactor,
+        child: SizedBox(
+          height: Dimensions.buttonHeight,
+          child: ElevatedButton(
+            style: ElevatedButton.styleFrom(
+              backgroundColor: isDisabled
+                ? Palet.disabled
+                : Palet.primaryAccent,
+              textStyle: TextStyle(
+                fontWeight: FontWeight.bold,
+                fontSize: Dimensions.buttonFontSize,
+              ),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(
+                  Dimensions.buttonCurve,
+                ),
+              ),
+              overlayColor: Colors.transparent,
             ),
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(Dimensions.buttonCurve),
+            onPressed: isDisabled ? null : onPressed,
+            child: _ButtonContext(
+              text: text,
+              iconPath: iconPath,
+              color: Palet.primaryText,
             ),
-          ),
-          onPressed: onPressed,
-          child: _ButtonContext(
-            text: text,
-            iconPath: iconPath,
-            color: Palet.primaryText,
           ),
         ),
-      ),
-    )
+      )
+    
     );
   }
 }
