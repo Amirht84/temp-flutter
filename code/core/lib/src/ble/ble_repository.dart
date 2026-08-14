@@ -153,6 +153,26 @@ class BleRepository {
   //   _updateState(_state.copyWith(angleH: clamped));
   // }
 
+  Future<void> setAngleH(double x = _ble.currentState.joystickX, double y = _ble.currentState.joystickY, double angleH) async {
+    final cx = x
+        .clamp(BleConstants.joystickMin, BleConstants.joystickMax)
+        .toDouble();
+    final cy = y
+        .clamp(BleConstants.joystickMin, BleConstants.joystickMax)
+        .toDouble();
+
+    final ch = angleH
+        .clamp(BleConstants.horizontalAngleMin, BleConstants.horizontalAngleMax)
+        .toDouble();
+    final payload = [
+      ..._floatToBytes(cx),
+      ..._floatToBytes(cy),
+      ..._floatToBytes(ch),
+    ];
+    await _writeFrame(BleConstants.Movement, payload);
+    _updateState(_state.copyWith(joystickX: cx, joystickY: cy, angleH: ch));
+  }
+
   /// Sets the vertical (tilt) angle, in degrees.
   ///
   /// Frame written to `BleConstants.Vangle`:
@@ -185,7 +205,7 @@ class BleRepository {
   ///
   /// Frame written to `BleConstants.Movement`:
   ///  [ X_FLOAT32 | Y_FLOAT32 (both big-endian) | CHECKSUM ]
-  Future<void> joystick(double x, double y, double angleH) async {
+  Future<void> joystick(double x, double y, double angleH = _ble.currentState.angleH) async {
     final cx = x
         .clamp(BleConstants.joystickMin, BleConstants.joystickMax)
         .toDouble();
