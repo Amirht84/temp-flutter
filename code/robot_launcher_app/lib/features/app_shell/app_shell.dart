@@ -9,6 +9,7 @@ import 'package:robot_launcher_app/shared/constants/themes.dart';
 import 'widgets/bottom_navigation_bar_shell.dart';
 import 'app_shell_view_model.dart';
 import 'package:robot_launcher_app/shared/constants/states.dart';
+import 'package:core/core.dart';
 
 class MainPage extends StatefulWidget {
   const MainPage({super.key});
@@ -19,8 +20,8 @@ class MainPage extends StatefulWidget {
 
 class _MainPageState extends State<MainPage> {
   late int currentIndex;
-//  late final BleRepository repo;
-//  late final AppShellViewModel viewModel;
+  late final BleRepository _repo;
+  late final AppShellViewModel _viewModel;
   late RobotConnectionState _connectionState;
   final pages = const [
     HomePage(),
@@ -31,17 +32,40 @@ class _MainPageState extends State<MainPage> {
   @override
   void initState() {
     currentIndex = 0;
-    _connectionState = RobotConnectionState.connected;
-//    repo = BleRepository(bleService: throw UnimplementedError());
-//    viewModel = AppShellViewModel(repo);
+    _connectionState = RobotConnectionState.disconnected;
+    _repo = BleRepository();
+    _viewModel = AppShellViewModel(_repo);
+    _viewModel.addListener(_listener);
     super.initState();
+  }
+  void _listener() {
+    switch ((_viewModel.isConnected, _viewModel.isConnecting, _viewModel.isScanning)){
+      case (true, _, _):
+        _connectionState = RobotConnectionState.connected;
+      
+      case (false, false, false):
+        _connectionState = RobotConnectionState.disconnected;
+      
+      case (_, true, _):
+        _connectionState = RobotConnectionState.connected;
+      
+      case (_, _, true):
+        _connectionState = RobotConnectionState.scanning;
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Palet.backGround,
-      appBar: AppBarShell(connectionState: _connectionState,),
+      appBar: AppBarShell(
+        connectionState: _connectionState,
+        onTap: () => setState( (){
+          if(_connectionState == RobotConnectionState.connected) {
+
+          }
+        })
+        ),
       body: Padding(
         padding:  EdgeInsets.symmetric(vertical: Dimensions.bodyPadding),
         child: AnimatedSwitcher(
@@ -65,5 +89,11 @@ class _MainPageState extends State<MainPage> {
         onTap:(newIndex) => setState(() => currentIndex = newIndex),
       ),
     );
+  }
+
+  @override
+  void dispose() {
+//    _repo.dispose();
+    super.dispose();
   }
 }

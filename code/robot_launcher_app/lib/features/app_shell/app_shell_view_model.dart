@@ -1,4 +1,4 @@
-/*import 'dart:async';
+import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:core/core.dart';
@@ -42,9 +42,17 @@ class AppShellViewModel extends ChangeNotifier {
         }
     }
 
+    Future<void> disconnect() async {
+      if(!isConnected) {
+        return;
+      }
+      await _repo.disconnectFromRobot();
+      isConnected = false;
+    }
+
     @override
     void dispose() {
       _connectionSubscription?.cancel();
       super.dispose();
     }
-}*/
+}

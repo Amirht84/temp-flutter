@@ -1,17 +1,24 @@
 import 'package:robot_launcher_app/shared/constants/themes.dart';
 import 'package:flutter/material.dart';
 import 'package:robot_launcher_app/shared/constants/states.dart';
+// import '../app_shell_view_model.dart';
 
 class AppBarShell extends StatelessWidget implements PreferredSizeWidget {
   const AppBarShell({
     super.key,
     required this.connectionState,
+    required this.onTap,
+//    required this.connectionViewModel,
   });
-  
+//  final AppShellViewModel connectionViewModel;
   final RobotConnectionState connectionState;
+  final GestureTapCallback onTap;
+
+
 
   @override
   Size get preferredSize => const Size.fromHeight(kToolbarHeight);
+
   
 
   @override
@@ -19,7 +26,9 @@ class AppBarShell extends StatelessWidget implements PreferredSizeWidget {
     return AppBar(
       centerTitle: true,
       backgroundColor: Palet.secondBackground,
-      title: Row(
+      title: InkWell (
+        onTap: onTap,
+        child: Row(
           mainAxisSize: MainAxisSize.min,
           children: switch (connectionState) {
             RobotConnectionState.blueOff => [
@@ -51,6 +60,7 @@ class AppBarShell extends StatelessWidget implements PreferredSizeWidget {
           }
       
         ),
+      ),
     );
   }
 }
