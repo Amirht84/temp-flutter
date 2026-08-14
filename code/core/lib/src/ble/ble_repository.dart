@@ -209,17 +209,16 @@ class BleRepository {
   ///
   /// Frame written to `BleConstants.Movement`:
   ///  [ X_FLOAT32 | Y_FLOAT32 (both big-endian) | CHECKSUM ]
-  Future<void> setAngleH({double? x, double? y, required double angleH}) async {
-    final targetX = x ?? _state.joystickX;
-    final targetY = y ?? _state.joystickY;
+  Future<void> joystick(double x, double y, {double? angleH}) async {
+    final targetAngleH = angleH ?? _state.angleH;
 
-    final cx = targetX
+    final cx = x
         .clamp(BleConstants.joystickMin, BleConstants.joystickMax)
         .toDouble();
-    final cy = targetY
+    final cy = y
         .clamp(BleConstants.joystickMin, BleConstants.joystickMax)
         .toDouble();
-    final ch = angleH
+    final ch = targetAngleH
         .clamp(BleConstants.horizontalAngleMin, BleConstants.horizontalAngleMax)
         .toDouble();
 
