@@ -8,9 +8,7 @@ class AppBarShell extends StatelessWidget implements PreferredSizeWidget {
     super.key,
     required this.connectionState,
     required this.onTap,
-//    required this.connectionViewModel,
   });
-//  final AppShellViewModel connectionViewModel;
   final RobotConnectionState connectionState;
   final GestureTapCallback onTap;
 

@@ -1,4 +1,4 @@
-//import 'package:core/core.dart';
+import 'package:core/core.dart';
 import 'package:flutter/material.dart';
 import 'package:robot_launcher_app/features/play/play.dart';
 import 'package:robot_launcher_app/features/scenario/scenario.dart';
@@ -39,19 +39,22 @@ class _MainPageState extends State<MainPage> {
     super.initState();
   }
   void _listener() {
-    switch ((_viewModel.isConnected, _viewModel.isConnecting, _viewModel.isScanning)){
-      case (true, _, _):
-        _connectionState = RobotConnectionState.connected;
+    setState(() {
+      switch ((_viewModel.isConnected, _viewModel.isConnecting, _viewModel.isScanning)){
+        case (true, _, _):
+          _connectionState = RobotConnectionState.connected;
       
-      case (false, false, false):
-        _connectionState = RobotConnectionState.disconnected;
+        case (false, false, false):
+          _connectionState = RobotConnectionState.disconnected;
       
-      case (_, true, _):
-        _connectionState = RobotConnectionState.connected;
+        case (_, true, _):
+          _connectionState = RobotConnectionState.connecting;
       
-      case (_, _, true):
-        _connectionState = RobotConnectionState.scanning;
+        case (_, _, true):
+          _connectionState = RobotConnectionState.scanning;
+      }
     }
+    );
   }
 
   @override
@@ -60,11 +63,13 @@ class _MainPageState extends State<MainPage> {
       backgroundColor: Palet.backGround,
       appBar: AppBarShell(
         connectionState: _connectionState,
-        onTap: () => setState( (){
+        onTap: (){
           if(_connectionState == RobotConnectionState.connected) {
-
+            _viewModel.disconnect();
+          } else if (_connectionState == RobotConnectionState.disconnected) {
+            _viewModel.connect();
           }
-        })
+        },
         ),
       body: Padding(
         padding:  EdgeInsets.symmetric(vertical: Dimensions.bodyPadding),
@@ -93,7 +98,9 @@ class _MainPageState extends State<MainPage> {
 
   @override
   void dispose() {
-//    _repo.dispose();
+    _viewModel.removeListener(_listener);
+    _viewModel.dispose();
+    _repo.dispose();
     super.dispose();
   }
 }
