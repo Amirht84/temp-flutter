@@ -4,6 +4,8 @@
 // import them without creating circular dependencies.
 // ============================================================
 
+enum Modes { IDLE, MANUAL, SEQUENCE, RANDOM, STOP, PLAY }
+
 /// UUID constants for the robot BLE service / characteristics.
 class BleConstants {
   BleConstants._();

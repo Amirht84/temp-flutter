@@ -61,8 +61,7 @@ class BleRepository {
 
     // On Android, location permission is often required for BLE scanning.
     // You can decide whether to require it as well.
-    final bluetoothGranted =
-        status[Permission.bluetoothScan]!.isGranted &&
+    final bluetoothGranted = status[Permission.bluetoothScan]!.isGranted &&
         status[Permission.bluetoothConnect]!.isGranted;
 
     // Optionally also check location (uncomment if needed):
@@ -212,12 +211,10 @@ class BleRepository {
   Future<void> joystick(double x, double y, {double? angleH}) async {
     final targetAngleH = angleH ?? _state.angleH;
 
-    final cx = x
-        .clamp(BleConstants.joystickMin, BleConstants.joystickMax)
-        .toDouble();
-    final cy = y
-        .clamp(BleConstants.joystickMin, BleConstants.joystickMax)
-        .toDouble();
+    final cx =
+        x.clamp(BleConstants.joystickMin, BleConstants.joystickMax).toDouble();
+    final cy =
+        y.clamp(BleConstants.joystickMin, BleConstants.joystickMax).toDouble();
     final ch = targetAngleH
         .clamp(BleConstants.horizontalAngleMin, BleConstants.horizontalAngleMax)
         .toDouble();
@@ -266,5 +263,39 @@ class BleRepository {
   /// Frees stream resources.
   void dispose() {
     _robotStateController.close();
+  }
+
+  Future<void> selectMode(Modes mode) async {
+    switch (mode) {
+      case Modes.IDLE:
+        await _ble.writeCharacteristic(BleConstants.Mode, const [0x01]);
+        _updateState(_state.copyWith(
+            isRunning: false,
+            topRpm: 0,
+            bottomRpm: 0,
+            angleH: 0,
+            angleV: 0,
+            joystickX: 0,
+            joystickY: 0));
+        break;
+
+      case Modes.STOP:
+        await _ble.writeCharacteristic(BleConstants.Mode, const [0x02]);
+        _updateState(
+            _state.copyWith(isRunning: false, topRpm: 0, bottomRpm: 0));
+        break;
+      case Modes.MANUAL:
+        await _ble.writeCharacteristic(BleConstants.Mode, const [0x03]);
+        break;
+      case Modes.SEQUENCE:
+        await _ble.writeCharacteristic(BleConstants.Mode, const [0x04]);
+        break;
+      case Modes.RANDOM:
+        await _ble.writeCharacteristic(BleConstants.Mode, const [0x05]);
+        break;
+      case Modes.PLAY:
+        await _ble.writeCharacteristic(BleConstants.Mode, const [0x06]);
+        break;
+    }
   }
 }
