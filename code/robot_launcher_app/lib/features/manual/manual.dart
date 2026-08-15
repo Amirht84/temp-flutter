@@ -95,7 +95,11 @@ class _ManualPageState extends State<ManualPage>{
           text: "Launch!",
           onPressed: () => _manualViewModel.launch(),
         ),
-        RedButton(iconPath: AppAssets.stop, text: "Stop!", onPressed: () => 0),
+        RedButton(
+          isDisabled: widget.isDisabled,
+          iconPath: AppAssets.stop,
+          text: "Stop!",
+          onPressed: () => 0),
       ],
     );
   }

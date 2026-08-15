@@ -37,7 +37,6 @@ class GreenButton extends StatelessWidget {
                   Dimensions.buttonCurve,
                 ),
               ),
-              overlayColor: Colors.transparent,
             ),
             onPressed: isDisabled ? null : onPressed,
             child: _ButtonContext(
@@ -58,11 +57,13 @@ class RedButton extends StatelessWidget {
     super.key,
     required this.text,
     required this.onPressed,
-    required this.iconPath
+    required this.iconPath,
+    this.isDisabled = false,
   });
   final String text;
   final VoidCallback onPressed;
   final String iconPath;
+  final bool isDisabled;
   @override
   Widget build(BuildContext context) {
     return Padding(
@@ -73,7 +74,9 @@ class RedButton extends StatelessWidget {
         height: Dimensions.buttonHeight,
         child: ElevatedButton(
           style: ElevatedButton.styleFrom(
-            backgroundColor: Palet.error,
+            backgroundColor: isDisabled 
+              ? Palet.disabled
+              : Palet.error,
             textStyle: TextStyle(
               fontWeight: FontWeight.bold,
               fontSize: Dimensions.buttonFontSize,
@@ -82,11 +85,11 @@ class RedButton extends StatelessWidget {
               borderRadius: BorderRadius.circular(Dimensions.buttonCurve),
             ),
           ),
-          onPressed: onPressed,
+          onPressed: isDisabled ? null : onPressed,
           child: _ButtonContext(
             text: text,
             iconPath: iconPath, 
-            color: Palet.secondaryPanels
+            color: isDisabled ? Palet.primaryText : Palet.secondaryPanels
           )
         )
       ),
@@ -113,7 +116,11 @@ class _ButtonContext extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.spaceAround,
         children: [
           SvgPicture.asset(
-            iconPath
+            iconPath,
+            colorFilter: ColorFilter.mode(
+              color,
+              BlendMode.srcIn,
+            ),
           ),
           Text(
             text,
