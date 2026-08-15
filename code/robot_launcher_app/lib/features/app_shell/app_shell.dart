@@ -2,6 +2,7 @@ import 'package:core/core.dart';
 import 'package:flutter/material.dart';
 import 'package:robot_launcher_app/features/play/play.dart';
 import 'package:robot_launcher_app/features/scenario/scenario.dart';
+import 'package:robot_launcher_app/features/smart/smart.dart';
 import 'widgets/app_bar_shell.dart';
 import 'package:robot_launcher_app/features/home/home.dart';
 import 'package:robot_launcher_app/features/manual/manual.dart';
@@ -33,8 +34,10 @@ class _MainPageState extends State<MainPage> {
       case 1:
         return .play;
       case 2:
-        return .manual;
+        return .smart;
       case 3:
+        return .manual;
+      case 4:
         return .scenario;
       default:
         throw StateError('not expected to be here');
@@ -92,6 +95,10 @@ class _MainPageState extends State<MainPage> {
         isDisabled: !_appShellViewModel.isConnected,
       ),
       PlayPage(
+        modeViewModel: _modeViewModel,
+        isDisabled: !_appShellViewModel.isConnected,
+      ),
+      SmartPage(
         modeViewModel: _modeViewModel,
         isDisabled: !_appShellViewModel.isConnected,
       ),

@@ -23,19 +23,23 @@ class BottomNavigationBarShell extends StatelessWidget {
         destinations: const [
           NavigationDestination(
             icon: Icon(Icons.home),
-            label: 'home'
+            label: 'HOME'
           ),
           NavigationDestination(
             icon: Icon(Icons.play_arrow),
-            label: 'play',
+            label: 'PLAY',
           ),
           NavigationDestination(
-            icon: Icon(Icons.menu_book),
-            label: 'manual',
+            icon: Icon(Icons.smart_toy),
+            label: 'AI'
+          ),
+          NavigationDestination(
+            icon: Icon(Icons.perm_data_setting_sharp),
+            label: 'MANUAL',
           ),  
           NavigationDestination(
             icon: Icon(Icons.account_tree_outlined),
-            label: 'scenario'
+            label: 'SCENARIO'
           ),
         ],
       ),

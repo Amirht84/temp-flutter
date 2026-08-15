@@ -1,7 +1,7 @@
 import 'package:core/core.dart';
 import 'package:flutter/material.dart';
 
-enum PageState { home, play, manual, scenario }
+enum PageState { home, play, smart, manual, scenario}
 
 class ModeViewModel extends ChangeNotifier {
   ModeViewModel(BleRepository repo)
@@ -20,10 +20,12 @@ class ModeViewModel extends ChangeNotifier {
     switch (pageState) {
       case .home:
         return .IDLE;
+      case .smart:
+        return .SMART;
       case .manual:
         return .MANUAL;
       case .play:
-        return .SMART;
+        return .MANUAL;
       case .scenario:
         return isRandom ? .RANDOM : .SEQUENCE;
     }
