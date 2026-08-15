@@ -7,7 +7,7 @@ import 'package:robot_launcher_app/features/home/home.dart';
 import 'package:robot_launcher_app/features/manual/manual.dart';
 import 'package:robot_launcher_app/shared/constants/themes.dart';
 import 'widgets/bottom_navigation_bar_shell.dart';
-import 'app_shell_view_model.dart';
+import 'connection_view_model.dart';
 import 'package:robot_launcher_app/shared/constants/states.dart';
 
 class MainPage extends StatefulWidget {
@@ -20,14 +20,14 @@ class MainPage extends StatefulWidget {
 class _MainPageState extends State<MainPage> {
   late int currentIndex;
   late final BleRepository _repo;
-  late final AppShellViewModel _viewModel;
+  late final ConnectionViewModel _viewModel;
   late RobotConnectionState _connectionState;
   @override
   void initState() {
     currentIndex = 0;
     _connectionState = RobotConnectionState.disconnected;
     _repo = BleRepository();
-    _viewModel = AppShellViewModel(_repo);
+    _viewModel = ConnectionViewModel(_repo);
     _viewModel.addListener(_listener);
     super.initState();
   }

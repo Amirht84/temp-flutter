@@ -3,9 +3,9 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:core/core.dart';
 
-class AppShellViewModel extends ChangeNotifier {
+class ConnectionViewModel extends ChangeNotifier {
 
-    AppShellViewModel(BleRepository repo) : _repo = repo, isScanning = false, isConnected = false, isConnecting = false;
+    ConnectionViewModel(BleRepository repo) : _repo = repo, isScanning = false, isConnected = false, isConnecting = false;
 
     final BleRepository _repo;
     StreamSubscription<bool>? _connectionSubscription;
@@ -33,7 +33,7 @@ class AppShellViewModel extends ChangeNotifier {
                 case (true, _, false):
                   isConnecting = false;
                 default:
-                  throw StateError('Unexpected State in AppShellViewModel.connect()');
+                  throw StateError('Unexpected State in ConnectionViewModel.connect()');
               }
                 notifyListeners();
             });
