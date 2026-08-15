@@ -13,7 +13,7 @@
     <!-- Required to declare BLE feature -->
     <uses-feature android:name="android.hardware.bluetooth_le" android:required="true" />
     <application
-        android:label="robot_launcher_app"
+        android:label="VISTA"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
         <activity

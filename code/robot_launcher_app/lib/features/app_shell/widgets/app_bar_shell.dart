@@ -1,7 +1,6 @@
 import 'package:robot_launcher_app/shared/constants/themes.dart';
 import 'package:flutter/material.dart';
 import 'package:robot_launcher_app/shared/constants/states.dart';
-// import '../app_shell_view_model.dart';
 
 class AppBarShell extends StatelessWidget implements PreferredSizeWidget {
   const AppBarShell({
@@ -12,19 +11,15 @@ class AppBarShell extends StatelessWidget implements PreferredSizeWidget {
   final RobotConnectionState connectionState;
   final GestureTapCallback onTap;
 
-
-
   @override
   Size get preferredSize => const Size.fromHeight(kToolbarHeight);
-
-  
 
   @override
   Widget build(BuildContext context) {
     return AppBar(
       centerTitle: true,
       backgroundColor: Palet.secondBackground,
-      title: InkWell (
+      title: InkWell(
         onTap: onTap,
         child: Row(
           mainAxisSize: MainAxisSize.min,
@@ -32,7 +27,7 @@ class AppBarShell extends StatelessWidget implements PreferredSizeWidget {
             RobotConnectionState.blueOff => [
               const Icon(Icons.circle, color: Palet.disabled),
               const SizedBox(width: Dimensions.titleContextSize),
-              const Text('Bluetooth Off')
+              const Text('Bluetooth Off'),
             ],
             RobotConnectionState.connected => [
               const Icon(Icons.circle, color: Palet.success),
@@ -42,8 +37,7 @@ class AppBarShell extends StatelessWidget implements PreferredSizeWidget {
             RobotConnectionState.connecting => [
               const Icon(Icons.circle, color: Palet.warning),
               const SizedBox(width: Dimensions.titleContextSize),
-              const Text('Connecting...')
-
+              const Text('Connecting...'),
             ],
             RobotConnectionState.disconnected => [
               const Icon(Icons.circle, color: Palet.error),
@@ -55,8 +49,7 @@ class AppBarShell extends StatelessWidget implements PreferredSizeWidget {
               const SizedBox(width: Dimensions.titleContextSize),
               const Text('Scanning...'),
             ],
-          }
-      
+          },
         ),
       ),
     );
