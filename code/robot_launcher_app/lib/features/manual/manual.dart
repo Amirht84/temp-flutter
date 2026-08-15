@@ -54,7 +54,7 @@ class _ManualPageState extends State<ManualPage>{
           minValue: 0,
           maxValue: 100,
           title: 'Up Wheel Speed',
-          unit: Units.rpm,
+          unit: Units.percent,
           isDisabled: widget.isDisabled || widget.modeViewModel.isStopped,
           onChangedEnd: (value) {
             _manualViewModel.setUpMotor(value.toInt());
@@ -65,7 +65,7 @@ class _ManualPageState extends State<ManualPage>{
           minValue: 0,
           maxValue: 100,
           title: 'Down Wheel Speed',
-          unit: Units.rpm,
+          unit: Units.percent,
           isDisabled: widget.isDisabled || widget.modeViewModel.isStopped,
           onChangedEnd:(value) {
             _manualViewModel.setDownMotor(value.toInt());
@@ -80,8 +80,8 @@ class _ManualPageState extends State<ManualPage>{
                 flex: 1,
                 child: FlexibleSlider(
                   isVertical: true,
-                  minValue: 0,
-                  maxValue: 100,
+                  minValue: 20,
+                  maxValue: 45,
                   title: 'Vertical Degree',
                   unit: Units.degree,
                   isDisabled: widget.isDisabled || widget.modeViewModel.isStopped,
@@ -95,10 +95,10 @@ class _ManualPageState extends State<ManualPage>{
                 flex: 1,
                 child: RotaryKnobCard(
                   title: "Horizontal Degree",
-                  minValue: -25,
-                  maxValue: 25,
+                  minValue: -90,
+                  maxValue: 90,
                   unit: Units.degree,
-                  isDisabled: widget.isDisabled || widget.modeViewModel.isStopped,
+                  isDisabled: widget.modeViewModel.isStopped || widget.isDisabled,
                   onChangedEnd: (value) {
                     _manualViewModel.setHorizonAngle(value);
                   }

@@ -42,30 +42,35 @@ class _RotaryKnobCardState extends State<RotaryKnobCard> {
         mainAxisSize: MainAxisSize.min,
         children: [
           TitleText(widget.title),
-          ValueText('${value.toInt()}${widget.unit}'),
           Expanded(
             child: FractionallySizedBox(
               widthFactor: 0.9,
               child: RotaryKnob(
                 value: value,
-                maxValue: 25,
-                minValue: -25,
-                startAngle: -140,
-                sweepAngle: 100,
-                onChangedEnd: widget.isDisabled ? null : widget.onChangedEnd,
+                maxValue: 90,
+                minValue: -90,
+                startAngle: -180,
+                sweepAngle: 180,
+                onChangedEnd: widget.isDisabled 
+                  ? null 
+                  : (newValue) {
+                    widget.onChangedEnd(newValue);
+                    setState(() => value = 0);
+                  }
+                ,
                 onChanged: widget.isDisabled ? (_){} : (newValue) => setState(() => value = newValue),
                 style: RotaryKnobStyle(
                   normal: RotaryKnobAppearance(
                     shadowBlurRadius: 1,
-                    majorDivisions: 2,
-                    minorDivisions: 10,
+                    majorDivisions: 4,
+                    minorDivisions: 15,
                     indicatorColor: widget.isDisabled ? Palet.disabled : Palet.primaryAccent,
                     boundryColor: widget.isDisabled ? Palet.disabled : Palet.primaryAccent,
                   ),
                   pressed: RotaryKnobAppearance(
                     shadowBlurRadius: widget.isDisabled ? 1 : 10,
-                    majorDivisions: 2,
-                    minorDivisions: 10,
+                    majorDivisions: 4,
+                    minorDivisions: 15,
                     indicatorColor: widget.isDisabled ? Palet.disabled : Palet.primaryAccent,
                     boundryColor: widget.isDisabled ? Palet.disabled : Palet.primaryAccent,
                   ),

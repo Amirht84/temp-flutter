@@ -1,4 +1,4 @@
 abstract final class Units {
   static const degree = '\u00B0';
-  static const rpm = ' rpm';
+  static const percent = ' \u0025';
 }

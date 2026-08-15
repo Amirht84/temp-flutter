@@ -33,7 +33,7 @@ class _FlexibleSliderState extends State<FlexibleSlider> {
   @override
   void initState() {
     super.initState();
-    value = (widget.minValue + widget.maxValue) / 2;
+    value = widget.minValue;
   }
 
   @override
