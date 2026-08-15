@@ -15,6 +15,7 @@ dependencies:
       ref: v0.1.1
       path: rotary_knob
   flutter_svg: ^2.2.1
+  flutter_joystick: ^0.2.2
   core:
     path: ../core
 

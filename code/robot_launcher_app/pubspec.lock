@@ -174,7 +174,7 @@ packages:
     source: hosted
     version: "0.0.20"
   flutter_joystick:
-    dependency: transitive
+    dependency: "direct main"
     description:
       name: flutter_joystick
       sha256: "119f5798305645527dbc0346ce98e9d3d16d4005b041c6b655dca093dc6a9272"
