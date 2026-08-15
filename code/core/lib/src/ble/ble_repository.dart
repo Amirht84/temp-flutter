@@ -28,7 +28,10 @@ import 'flutter_blue_plus_service.dart';
 ///    current protocol is fluwrite-only (no telemetry notify).
 ///  • Manages scan / connection life-cycle.
 class BleRepository {
-  final _ble = FlutterBluePlusService();
+  BleRepository({BleService? bleService})
+      : _ble = bleService ?? FlutterBluePlusService();
+
+  final BleService _ble;
 
   // ── Internal state ─────────────────────────────────────────
   final _robotStateController = StreamController<RobotState>.broadcast();
@@ -84,31 +87,24 @@ class BleRepository {
   }
 
   // ── Scanning ───────────────────────────────────────────────
-  /// Scans for nearby devices and returns the first [BleDevice] matching
-  /// the target service UUID defined in [BleConstants.robotServiceUuid].
+  /// Scans for nearby devices and emits each [BleDevice] as it's
+  /// discovered, so the UI can show a live list and let the user
+  /// pick which one to connect to.
   ///
-  /// Returns `null` if no matching device is found before the scan completes.
-  Future<BleDevice?> scanForRobots() async {
-    try {
-      final device = await _ble
-          .scanForDevices(timeout: BleConstants.scanTimeout)
-          .firstWhere((device) => device.id == BleConstants.robotServiceUuid);
-      return device;
-    } catch (_) {
-      // Returns null if firstWhere times out or completes without finding a match
-      return null;
-    }
+  /// The stream closes on its own after [timeout] (defaults to
+  /// [BleConstants.scanTimeout]) or when [stopScan] is called.
+  Stream<BleDevice> scanForRobots({Duration? timeout}) {
+    return _ble.scanForDevices(timeout: timeout ?? BleConstants.scanTimeout);
   }
 
   Future<void> stopScan() => _ble.stopScan();
 
   // ── Connection ─────────────────────────────────────────────
 
-  /// Connects to [device] and returns a stream notifying connection state changes.
-  Stream<bool> connectToRobot(BleDevice device) {
-    _ble.connect(device);
-    return connectionStream;
-  }
+  /// Connects to [device]. Resolves once the connection attempt
+  /// completes (or throws on failure) — subscribe to
+  /// [connectionStream] to observe the resulting connection state.
+  Future<void> connectToRobot(BleDevice device) => _ble.connect(device);
 
   /// Disconnects and resets the cached state.
   Future<void> disconnectFromRobot() async {
@@ -268,33 +264,37 @@ class BleRepository {
   Future<void> selectMode(Modes mode) async {
     switch (mode) {
       case Modes.IDLE:
-        await _ble.writeCharacteristic(BleConstants.Mode, const [0x01]);
-        _updateState(_state.copyWith(
+        await _ble.writeCharacteristic(BleConstants.Mode, const [0x00]);
+        _updateState(
+          _state.copyWith(
             isRunning: false,
             topRpm: 0,
             bottomRpm: 0,
             angleH: 0,
             angleV: 0,
             joystickX: 0,
-            joystickY: 0));
+            joystickY: 0,
+          ),
+        );
         break;
 
       case Modes.STOP:
-        await _ble.writeCharacteristic(BleConstants.Mode, const [0x02]);
+        await _ble.writeCharacteristic(BleConstants.Mode, const [0x05]);
         _updateState(
-            _state.copyWith(isRunning: false, topRpm: 0, bottomRpm: 0));
+          _state.copyWith(isRunning: false, topRpm: 0, bottomRpm: 0),
+        );
         break;
       case Modes.MANUAL:
-        await _ble.writeCharacteristic(BleConstants.Mode, const [0x03]);
+        await _ble.writeCharacteristic(BleConstants.Mode, const [0x01]);
         break;
       case Modes.SEQUENCE:
-        await _ble.writeCharacteristic(BleConstants.Mode, const [0x04]);
+        await _ble.writeCharacteristic(BleConstants.Mode, const [0x03]);
         break;
       case Modes.RANDOM:
-        await _ble.writeCharacteristic(BleConstants.Mode, const [0x05]);
+        await _ble.writeCharacteristic(BleConstants.Mode, const [0x02]);
         break;
-      case Modes.PLAY:
-        await _ble.writeCharacteristic(BleConstants.Mode, const [0x06]);
+      case Modes.SMART:
+        await _ble.writeCharacteristic(BleConstants.Mode, const [0x04]);
         break;
     }
   }
