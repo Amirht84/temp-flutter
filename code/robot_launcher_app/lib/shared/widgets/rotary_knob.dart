@@ -12,6 +12,7 @@ class RotaryKnobCard extends StatefulWidget {
     required this.unit,
     required this.isDisabled,
     required this.onChangedEnd,
+    required this.onChanged,
   });
 
   final String title;
@@ -19,7 +20,7 @@ class RotaryKnobCard extends StatefulWidget {
   final double maxValue;
   final String unit;
   final bool isDisabled;
-
+  final ValueChanged<double> onChanged;
   final ValueChanged<double> onChangedEnd;
   @override
   State<StatefulWidget> createState() => _RotaryKnobCardState();
@@ -58,7 +59,12 @@ class _RotaryKnobCardState extends State<RotaryKnobCard> {
                     setState(() => value = 0);
                   }
                 ,
-                onChanged: widget.isDisabled ? (_){} : (newValue) => setState(() => value = newValue),
+                onChanged: widget.isDisabled 
+                  ? (_){} 
+                  : (newValue) {
+                    widget.onChanged(newValue);
+                    setState(() => value = newValue);
+                  },
                 style: RotaryKnobStyle(
                   normal: RotaryKnobAppearance(
                     shadowBlurRadius: 1,

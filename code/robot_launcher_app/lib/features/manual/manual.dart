@@ -99,8 +99,11 @@ class _ManualPageState extends State<ManualPage>{
                   maxValue: 90,
                   unit: Units.degree,
                   isDisabled: widget.modeViewModel.isStopped || widget.isDisabled,
-                  onChangedEnd: (value) {
+                  onChanged:(value) {
                     _manualViewModel.setHorizonAngle(value);
+                  },
+                  onChangedEnd: (_) {
+                    _manualViewModel.setHorizonAngle(0);
                   }
                 ),
               ),
