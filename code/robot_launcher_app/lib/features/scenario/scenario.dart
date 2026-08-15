@@ -1,13 +1,37 @@
 import 'package:flutter/material.dart';
+import 'package:robot_launcher_app/features/app_shell/mode_view_model.dart';
 import 'package:robot_launcher_app/shared/widgets/buttons.dart';
 import 'package:robot_launcher_app/shared/constants/assets.dart';
 
-class ScenarioPage extends StatelessWidget {
+class ScenarioPage extends StatefulWidget {
   const ScenarioPage({
-    super.key
+    super.key,
+    required this.modeViewModel,
+    this.isDisabled = false,
   });
+
+  final ModeViewModel modeViewModel;
+  final bool isDisabled;
+  @override
+  State<StatefulWidget> createState() => _ScenarioPageState();
+}
+class _ScenarioPageState extends State<ScenarioPage> {
+
   @override
   Widget build(BuildContext context) {
+        final stopButton = widget.modeViewModel.isStopped
+      ? GreenButton(
+          iconPath: AppAssets.start,
+          onPressed: () => setState(widget.modeViewModel.switchStop),
+          text: 'Start',
+          isDisabled: widget.isDisabled,
+      )
+      : RedButton(
+        text: 'Stop',
+        onPressed: () => setState(widget.modeViewModel.switchStop),
+        iconPath: AppAssets.stop,
+        isDisabled: widget.isDisabled,
+      );
     return Column(
       children: [
         Expanded(
@@ -15,9 +39,13 @@ class ScenarioPage extends StatelessWidget {
             child: Text("coming soon...")
           )
         ),
-        GreenButton(iconPath: AppAssets.random, text: "Random", onPressed: () => 0),
-        RedButton(iconPath: AppAssets.stop, text: "Stop!", onPressed: () => 0),
-
+        GreenButton(
+          iconPath: AppAssets.random,
+          text: widget.modeViewModel.isRandom ? "Normal" : "Random",
+          onPressed: () => setState(widget.modeViewModel.switchRandom),
+          isDisabled: widget.isDisabled || widget.modeViewModel.isStopped
+        ),
+        stopButton,
       ]
     );
   }

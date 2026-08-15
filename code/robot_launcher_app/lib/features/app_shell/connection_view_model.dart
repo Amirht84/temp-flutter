@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:core/core.dart';
+import 'mode_view_model.dart';
 
 class ConnectionViewModel extends ChangeNotifier {
 
@@ -35,7 +36,7 @@ class ConnectionViewModel extends ChangeNotifier {
                 default:
                   throw StateError('Unexpected State in ConnectionViewModel.connect()');
               }
-                notifyListeners();
+              notifyListeners();
             });
         } else {
           notifyListeners();

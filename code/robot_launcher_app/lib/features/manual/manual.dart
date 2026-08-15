@@ -1,5 +1,6 @@
 import 'package:core/core.dart';
 import 'package:flutter/material.dart';
+import 'package:robot_launcher_app/features/app_shell/mode_view_model.dart';
 import 'package:robot_launcher_app/features/manual/manual_view_model.dart';
 import 'package:robot_launcher_app/shared/widgets/sliders.dart';
 import 'package:robot_launcher_app/shared/widgets/dividers.dart';
@@ -12,10 +13,13 @@ class ManualPage extends StatefulWidget {
   const ManualPage({
     super.key,
     required this.repo,
+    required this.modeViewModel,
     this.isDisabled = false,
+
   });
   final bool isDisabled;
   final BleRepository repo;
+  final ModeViewModel modeViewModel;
   @override
   State<StatefulWidget> createState() => _ManualPageState();
 }
@@ -29,6 +33,20 @@ class _ManualPageState extends State<ManualPage>{
   }
   @override
   Widget build(BuildContext context) {
+    final stopButton = widget.modeViewModel.isStopped
+      ? GreenButton(
+          iconPath: AppAssets.start,
+          onPressed: () => setState(widget.modeViewModel.switchStop),
+          text: 'Start',
+          isDisabled: widget.isDisabled,
+      )
+      : RedButton(
+        text: 'Stop',
+        onPressed: () => setState(widget.modeViewModel.switchStop),
+        iconPath: AppAssets.stop,
+        isDisabled: widget.isDisabled,
+      );
+
     return Column(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
@@ -37,7 +55,7 @@ class _ManualPageState extends State<ManualPage>{
           maxValue: 100,
           title: 'Up Wheel Speed',
           unit: Units.rpm,
-          isDisabled: widget.isDisabled,
+          isDisabled: widget.isDisabled || widget.modeViewModel.isStopped,
           onChangedEnd: (value) {
             _manualViewModel.setUpMotor(value.toInt());
           },
@@ -48,7 +66,7 @@ class _ManualPageState extends State<ManualPage>{
           maxValue: 100,
           title: 'Down Wheel Speed',
           unit: Units.rpm,
-          isDisabled: widget.isDisabled,
+          isDisabled: widget.isDisabled || widget.modeViewModel.isStopped,
           onChangedEnd:(value) {
             _manualViewModel.setDownMotor(value.toInt());
           },
@@ -66,7 +84,7 @@ class _ManualPageState extends State<ManualPage>{
                   maxValue: 100,
                   title: 'Vertical Degree',
                   unit: Units.degree,
-                  isDisabled: widget.isDisabled,
+                  isDisabled: widget.isDisabled || widget.modeViewModel.isStopped,
                   onChangedEnd:(value) {
                     _manualViewModel.setVerticAngle(value);
                   },
@@ -80,7 +98,7 @@ class _ManualPageState extends State<ManualPage>{
                   minValue: -25,
                   maxValue: 25,
                   unit: Units.degree,
-                  isDisabled: widget.isDisabled,
+                  isDisabled: widget.isDisabled || widget.modeViewModel.isStopped,
                   onChangedEnd: (value) {
                     _manualViewModel.setHorizonAngle(value);
                   }
@@ -90,16 +108,13 @@ class _ManualPageState extends State<ManualPage>{
           ),
         ),
         GreenButton(
-          isDisabled: widget.isDisabled,
+          isDisabled: widget.isDisabled || widget.modeViewModel.isStopped,
           iconPath: AppAssets.tennisBall,
           text: "Launch!",
           onPressed: () => _manualViewModel.launch(),
         ),
-        RedButton(
-          isDisabled: widget.isDisabled,
-          iconPath: AppAssets.stop,
-          text: "Stop!",
-          onPressed: () => 0),
+
+        stopButton,
       ],
     );
   }

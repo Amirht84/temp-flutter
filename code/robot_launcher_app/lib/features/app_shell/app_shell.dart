@@ -9,6 +9,7 @@ import 'package:robot_launcher_app/shared/constants/themes.dart';
 import 'widgets/bottom_navigation_bar_shell.dart';
 import 'connection_view_model.dart';
 import 'package:robot_launcher_app/shared/constants/states.dart';
+import 'mode_view_model.dart';
 
 class MainPage extends StatefulWidget {
   const MainPage({super.key});
@@ -20,20 +21,38 @@ class MainPage extends StatefulWidget {
 class _MainPageState extends State<MainPage> {
   late int currentIndex;
   late final BleRepository _repo;
-  late final ConnectionViewModel _viewModel;
+  late final ModeViewModel _modeViewModel;
+  late final ConnectionViewModel _connectionViewModel;
   late RobotConnectionState _connectionState;
+
+  PageState get _pageState {
+    switch(currentIndex){
+      case 0 : return .home;
+      case 1 : return .play;
+      case 2 : return .manual;
+      case 3 : return .scenario;
+      default : throw StateError('not expected to be here');
+    }
+  }
   @override
   void initState() {
     currentIndex = 0;
     _connectionState = RobotConnectionState.disconnected;
     _repo = BleRepository();
-    _viewModel = ConnectionViewModel(_repo);
-    _viewModel.addListener(_listener);
+    _connectionViewModel = ConnectionViewModel(_repo);
+    _modeViewModel = ModeViewModel(_repo);
+    _modeViewModel.addListener(_modeListener);
+    _connectionViewModel.addListener(_connectionListener);
     super.initState();
   }
-  void _listener() {
+  void _modeListener() {
+    if(_connectionState == .connected) {
+      _modeViewModel.pushMode();
+    }
+  }
+  void _connectionListener() {
     setState(() {
-      switch ((_viewModel.isConnected, _viewModel.isConnecting, _viewModel.isScanning)){
+      switch ((_connectionViewModel.isConnected, _connectionViewModel.isConnecting, _connectionViewModel.isScanning)){
         case (true, _, _):
           _connectionState = RobotConnectionState.connected;
       
@@ -46,17 +65,20 @@ class _MainPageState extends State<MainPage> {
         case (_, _, true):
           _connectionState = RobotConnectionState.scanning;
       }
-    }
-    );
+      if(_connectionState == .connected){
+        _modeViewModel.pushMode();
+      }
+    });
+
   }
 
   @override
   Widget build(BuildContext context) {
     final pages = [
-      HomePage(),
-      PlayPage(),
-      ManualPage(repo: _repo, isDisabled: !_viewModel.isConnected),
-      ScenarioPage(),
+      HomePage(modeViewModel: _modeViewModel, isDisabled: !_connectionViewModel.isConnected),
+      PlayPage(modeViewModel: _modeViewModel, isDisabled: !_connectionViewModel.isConnected),
+      ManualPage(repo: _repo, isDisabled: !_connectionViewModel.isConnected, modeViewModel: _modeViewModel),
+      ScenarioPage(modeViewModel: _modeViewModel, isDisabled: !_connectionViewModel.isConnected),
     ];
     return Scaffold(
       backgroundColor: Palet.backGround,
@@ -64,9 +86,9 @@ class _MainPageState extends State<MainPage> {
         connectionState: _connectionState,
         onTap: (){
           if(_connectionState == RobotConnectionState.connected) {
-            _viewModel.disconnect();
+            _connectionViewModel.disconnect();
           } else if (_connectionState == RobotConnectionState.disconnected) {
-            _viewModel.connect();
+            _connectionViewModel.connect();
           }
         },
         ),
@@ -90,16 +112,22 @@ class _MainPageState extends State<MainPage> {
       ),
       bottomNavigationBar: BottomNavigationBarShell(
         currentIndex: currentIndex,
-        onTap:(newIndex) => setState(() => currentIndex = newIndex),
+        onTap:(newIndex) => setState(() {
+          currentIndex = newIndex;
+          _modeViewModel.setPage(_pageState);
+        }
+        ),
       ),
     );
   }
 
   @override
   void dispose() {
-    _viewModel.removeListener(_listener);
-    _viewModel.dispose();
+    _connectionViewModel.removeListener(_connectionListener);
+    _connectionViewModel.dispose();
     _repo.dispose();
+    _modeViewModel.removeListener(_modeListener);
+    _modeViewModel.dispose();
     super.dispose();
   }
 }
