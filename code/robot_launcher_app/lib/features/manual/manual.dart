@@ -33,6 +33,7 @@ class _ManualPageState extends State<ManualPage>{
   }
   @override
   Widget build(BuildContext context) {
+    final bool isDisabled = widget.isDisabled || widget.modeViewModel.isStopped;
     final stopButton = widget.modeViewModel.isStopped
       ? GreenButton(
           iconPath: AppAssets.start,
@@ -55,7 +56,7 @@ class _ManualPageState extends State<ManualPage>{
           maxValue: 100,
           title: 'Up Wheel Speed',
           unit: Units.percent,
-          isDisabled: widget.isDisabled || widget.modeViewModel.isStopped,
+          isDisabled: isDisabled,
           onChangedEnd: (value) {
             _manualViewModel.setUpMotor(value.toInt());
           },
@@ -66,7 +67,7 @@ class _ManualPageState extends State<ManualPage>{
           maxValue: 100,
           title: 'Down Wheel Speed',
           unit: Units.percent,
-          isDisabled: widget.isDisabled || widget.modeViewModel.isStopped,
+          isDisabled: isDisabled,
           onChangedEnd:(value) {
             _manualViewModel.setDownMotor(value.toInt());
           },
@@ -84,7 +85,7 @@ class _ManualPageState extends State<ManualPage>{
                   maxValue: 45,
                   title: 'Vertical Degree',
                   unit: Units.degree,
-                  isDisabled: widget.isDisabled || widget.modeViewModel.isStopped,
+                  isDisabled: isDisabled,
                   onChangedEnd:(value) {
                     _manualViewModel.setVerticAngle(value);
                   },
@@ -98,7 +99,7 @@ class _ManualPageState extends State<ManualPage>{
                   minValue: -90,
                   maxValue: 90,
                   unit: Units.degree,
-                  isDisabled: widget.modeViewModel.isStopped || widget.isDisabled,
+                  isDisabled: isDisabled,
                   onChanged:(value) {
                     _manualViewModel.setHorizonAngle(value);
                   },
@@ -111,12 +112,11 @@ class _ManualPageState extends State<ManualPage>{
           ),
         ),
         GreenButton(
-          isDisabled: widget.isDisabled || widget.modeViewModel.isStopped,
+          isDisabled: isDisabled,
           iconPath: AppAssets.tennisBall,
           text: "Launch!",
           onPressed: () => _manualViewModel.launch(),
         ),
-
         stopButton,
       ],
     );
