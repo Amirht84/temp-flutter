@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_joystick/flutter_joystick.dart';
 import 'package:robot_launcher_app/shared/constants/themes.dart';
+import 'package:robot_launcher_app/shared/painters/joystick_paint.dart';
 import 'package:robot_launcher_app/shared/widgets/texts.dart';
 
 class JoystickCard extends StatefulWidget {
@@ -65,21 +66,15 @@ class _JoystickCardState extends State<JoystickCard> {
                           _y = 0;
                         });
                       },
-                      base: JoystickBase(
-                        decoration: JoystickBaseDecoration(
-                          color: Palet.secondaryPanels,
-                          middleCircleColor: accent,
-                          boxShadowColor: Palet.divider,
-                        ),
-                        arrowsDecoration: JoystickArrowsDecoration(
-                          color: accent,
-                          enableAnimation: !widget.isDisabled,
-                        ),
-                      ),
+                      base: SizedBox.expand(
+                        child: CustomPaint(
+                        painter: JoystickPainter(appearance: JoystickAppearance()),
+                      ),),
                       stick: JoystickStick(
+                        size: 42,
                         decoration: JoystickStickDecoration(
-                          color: accent,
-                          shadowColor: accent.withOpacity(0.4),
+
+                          color: Palet.primaryAccent,
                         ),
                       ),
                     ),
