@@ -13,10 +13,15 @@ class ManualViewModel extends ChangeNotifier {
   bool pendingBottomRpm = false;
   bool pendingVerticAngle = false;
   bool pendingHorizonAngle = false;
+  bool pendingLaunch = true;
 
   final BleRepository _repo;
   Future<void> launch() async {
-    //Unimplemented
+    pendingLaunch = true;
+    notifyListeners();
+    await _repo.shoot();
+    pendingLaunch = false;
+    notifyListeners();
   }
   Future<void> setUpMotor(int rpm) async {
     _topRpm = rpm;
