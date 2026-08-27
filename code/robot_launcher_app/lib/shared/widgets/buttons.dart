@@ -10,6 +10,7 @@ class GreenButton extends StatelessWidget {
     required this.iconPath,
     this.isDisabled = false,
   });
+
   final String text;
   final VoidCallback onPressed;
   final String iconPath;
@@ -17,83 +18,107 @@ class GreenButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: EdgeInsets.symmetric(vertical: Dimensions.buttonPadding),
-      child: FractionallySizedBox(
-        widthFactor: Dimensions.buttonWidthFactor,
-        child: SizedBox(
-          height: Dimensions.buttonHeight,
-          child: ElevatedButton(
-            style: ElevatedButton.styleFrom(
-              backgroundColor: isDisabled
-                ? Palet.disabled
-                : Palet.primaryAccent,
-              textStyle: TextStyle(
-                fontWeight: FontWeight.bold,
-                fontSize: Dimensions.buttonFontSize,
-              ),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(
-                  Dimensions.buttonCurve,
-                ),
-              ),
-            ),
-            onPressed: isDisabled ? null : onPressed,
-            child: _ButtonContext(
-              text: text,
-              iconPath: iconPath,
-              color: Palet.primaryText,
-            ),
-          ),
-        ),
-      )
-    
+    return _ActionButton(
+      text: text,
+      onPressed: onPressed,
+      iconPath: iconPath,
+      isDisabled: isDisabled,
+      backgroundColor: Palet.primaryAccent,
+      disabledColor: Palet.disabled,
+      contextColor: Palet.primaryText,
     );
   }
 }
 
 class RedButton extends StatelessWidget {
-    const RedButton({
+  const RedButton({
     super.key,
     required this.text,
     required this.onPressed,
     required this.iconPath,
     this.isDisabled = false,
   });
+
   final String text;
   final VoidCallback onPressed;
   final String iconPath;
   final bool isDisabled;
+
   @override
   Widget build(BuildContext context) {
+    return _ActionButton(
+      text: text,
+      onPressed: onPressed,
+      iconPath: iconPath,
+      isDisabled: isDisabled,
+      backgroundColor: Palet.error,
+      disabledColor: Palet.disabled,
+      contextColor: Palet.secondaryPanels,
+    );
+  }
+}
+
+class _ActionButton extends StatelessWidget {
+  const _ActionButton({
+    required this.text,
+    required this.onPressed,
+    required this.iconPath,
+    required this.backgroundColor,
+    required this.disabledColor,
+    required this.contextColor,
+    required this.isDisabled,
+  });
+
+  final String text;
+  final VoidCallback onPressed;
+  final String iconPath;
+  final Color backgroundColor;
+  final Color disabledColor;
+  final Color contextColor;
+  final bool isDisabled;
+
+  @override
+  Widget build(BuildContext context) {
+    final borderRadius = BorderRadius.circular(Dimensions.buttonCurve);
+
     return Padding(
       padding: EdgeInsets.symmetric(vertical: Dimensions.buttonPadding),
       child: FractionallySizedBox(
-      widthFactor: Dimensions.buttonWidthFactor,
-      child: SizedBox(
-        height: Dimensions.buttonHeight,
-        child: ElevatedButton(
-          style: ElevatedButton.styleFrom(
-            backgroundColor: isDisabled 
-              ? Palet.disabled
-              : Palet.error,
-            textStyle: TextStyle(
-              fontWeight: FontWeight.bold,
-              fontSize: Dimensions.buttonFontSize,
+        widthFactor: Dimensions.buttonWidthFactor,
+        child: Container(
+          height: Dimensions.buttonHeight,
+          decoration: BoxDecoration(
+            borderRadius: borderRadius,
+            boxShadow: isDisabled
+                ? null
+                : const [
+                    BoxShadow(
+                      color: Palet.shadow,
+                      blurRadius: 8,
+                      offset: Offset(0, 3),
+                    ),
+                  ],
+          ),
+          child: ElevatedButton(
+            style: ElevatedButton.styleFrom(
+              elevation: 0,
+              backgroundColor: isDisabled ? disabledColor : backgroundColor,
+
+              textStyle: TextStyle(
+                fontWeight: FontWeight.bold,
+                fontSize: Dimensions.buttonFontSize,
+              ),
+              shape: RoundedRectangleBorder(borderRadius: borderRadius),
             ),
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(Dimensions.buttonCurve),
+            onPressed: isDisabled ? null : onPressed,
+            child: _ButtonContext(
+              text: text,
+              iconPath: iconPath,
+              color: isDisabled ? Palet.primaryText : contextColor,
             ),
           ),
-          onPressed: isDisabled ? null : onPressed,
-          child: _ButtonContext(
-            text: text,
-            iconPath: iconPath, 
-            color: isDisabled ? Palet.primaryText : Palet.secondaryPanels
-          )
-        )
+        ),
       ),
-    ),
     );
   }
 }
@@ -104,6 +129,7 @@ class _ButtonContext extends StatelessWidget {
     required this.iconPath,
     required this.color,
   });
+
   final String text;
   final String iconPath;
   final Color color;
@@ -117,20 +143,15 @@ class _ButtonContext extends StatelessWidget {
         children: [
           SvgPicture.asset(
             iconPath,
-            colorFilter: ColorFilter.mode(
-              color,
-              BlendMode.srcIn,
-            ),
+            colorFilter: ColorFilter.mode(color, BlendMode.srcIn),
           ),
-          Text(
-            text,
-            style: TextStyle(color: color),
-          )
+          Text(text, style: TextStyle(color: color)),
         ],
       ),
     );
   }
 }
+
 /*
 class WhiteButton extends StatelessWidget {
   const WhiteButton({

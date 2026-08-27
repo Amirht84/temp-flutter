@@ -2,18 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:robot_launcher_app/shared/constants/themes.dart';
 
 class JoystickPainter extends CustomPainter {
-  const JoystickPainter({
-    required this.appearance,
-  });
+  const JoystickPainter({required this.appearance});
 
   final JoystickAppearance appearance;
 
   @override
   void paint(Canvas canvas, Size size) {
-    final center = Offset(
-      size.width / 2,
-      size.height / 2,
-    );
+    final center = Offset(size.width / 2, size.height / 2);
 
     final radius = size.shortestSide / 2;
 
@@ -59,6 +54,7 @@ class JoystickPainter extends CustomPainter {
         ..style = PaintingStyle.fill,
     );
 
+    // Inner shadow
     canvas.drawCircle(
       center,
       innerRadius,
@@ -66,10 +62,7 @@ class JoystickPainter extends CustomPainter {
         ..color = Palet.shadow
         ..style = PaintingStyle.stroke
         ..strokeWidth = 8
-        ..maskFilter = const MaskFilter.blur(
-          BlurStyle.inner,
-          5,
-        )
+        ..maskFilter = const MaskFilter.blur(BlurStyle.inner, 5),
     );
   }
 

@@ -7,13 +7,15 @@ class ManualViewModel extends ChangeNotifier {
   int _bottomRpm = 0;
   double _verticAngle = 0;
   double _horizonAngle = 0;
-
+  double _xPos = 0;
+  double _yPos = 0;
 
   bool pendingTopRpm = false;
   bool pendingBottomRpm = false;
   bool pendingVerticAngle = false;
   bool pendingHorizonAngle = false;
-  bool pendingLaunch = true;
+  bool pendingLaunch = false;
+  bool pendingJoystick = false;
 
   final BleRepository _repo;
   Future<void> launch() async {
@@ -23,6 +25,7 @@ class ManualViewModel extends ChangeNotifier {
     pendingLaunch = false;
     notifyListeners();
   }
+
   Future<void> setUpMotor(int rpm) async {
     _topRpm = rpm;
     pendingTopRpm = true;
@@ -31,6 +34,7 @@ class ManualViewModel extends ChangeNotifier {
     pendingTopRpm = false;
     notifyListeners();
   }
+
   Future<void> setDownMotor(int rpm) async {
     _bottomRpm = rpm;
     pendingBottomRpm = true;
@@ -39,6 +43,7 @@ class ManualViewModel extends ChangeNotifier {
     pendingBottomRpm = false;
     notifyListeners();
   }
+
   Future<void> setVerticAngle(double angle) async {
     _verticAngle = angle;
     pendingVerticAngle = true;
@@ -46,12 +51,23 @@ class ManualViewModel extends ChangeNotifier {
     pendingVerticAngle = false;
     notifyListeners();
   }
-  Future<void> setHorizonAngle (double angle) async {
+
+  Future<void> setHorizonAngle(double angle) async {
     _horizonAngle = angle;
     pendingHorizonAngle = true;
     notifyListeners();
     await _repo.setAngleH(angleH: _horizonAngle);
     pendingHorizonAngle = false;
+    notifyListeners();
+  }
+
+  Future<void> setJoystick(double x, double y) async {
+    _xPos = x;
+    _yPos = y;
+    pendingJoystick = true;
+    notifyListeners();
+    await _repo.joystick(_xPos, _yPos);
+    pendingJoystick = false;
     notifyListeners();
   }
 }

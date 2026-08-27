@@ -15,11 +15,8 @@ class JoystickCard extends StatefulWidget {
   });
 
   final String title;
-
   final void Function(double x, double y) onChanged;
-
   final void Function(double x, double y)? onChangedEnd;
-
   final bool isDisabled;
   final JoystickMode mode;
 
@@ -31,60 +28,77 @@ class _JoystickCardState extends State<JoystickCard> {
   double _x = 0;
   double _y = 0;
 
+  void _handleJoystickChanged(double x, double y) {
+    _x = x;
+    _y = y;
+
+    widget.onChanged(x, y);
+  }
+
+  void _handleJoystickEnd() {
+    widget.onChangedEnd?.call(_x, _y);
+
+    setState(() {
+      _x = 0;
+      _y = 0;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
-    final Color accent = widget.isDisabled
-        ? Palet.disabled
-        : Palet.primaryAccent;
+    return Column(
+      mainAxisSize: MainAxisSize.max,
+      children: [
+        TitleText(widget.title),
 
-    return Center(
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          TitleText(widget.title),
-          Expanded(
-            child: Padding(
-              padding: EdgeInsets.symmetric(vertical: Dimensions.buttonPadding),
-              child: FractionallySizedBox(
-                widthFactor: Dimensions.valueControlFactor,
-                child: AspectRatio(
-                  aspectRatio: 1,
-                  child: AbsorbPointer(
-                    absorbing: widget.isDisabled,
-                    child: Joystick(
-                      mode: widget.mode,
-                      includeInitialAnimation: !widget.isDisabled,
-                      listener: (details) {
-                        _x = details.x;
-                        _y = details.y;
-                        widget.onChanged(_x, _y);
-                      },
-                      onStickDragEnd: () {
-                        widget.onChangedEnd?.call(_x, _y);
-                        setState(() {
-                          _x = 0;
-                          _y = 0;
-                        });
-                      },
-                      base: SizedBox.expand(
-                        child: CustomPaint(
-                        painter: JoystickPainter(appearance: JoystickAppearance()),
-                      ),),
-                      stick: JoystickStick(
-                        size: 42,
-                        decoration: JoystickStickDecoration(
+        Expanded(
+          child: Padding(
+            padding: EdgeInsets.symmetric(vertical: Dimensions.buttonPadding),
+            child: FractionallySizedBox(
+              widthFactor: Dimensions.valueControlFactor,
+              child: AspectRatio(
+                aspectRatio: 1,
+                child: AbsorbPointer(
+                  absorbing: widget.isDisabled,
+                  child: LayoutBuilder(
+                    builder: (context, constraints) {
+                      final joystickSize = constraints.biggest.shortestSide;
 
-                          color: Palet.primaryAccent,
+                      return Joystick(
+                        mode: widget.mode,
+                        includeInitialAnimation: !widget.isDisabled,
+
+                        listener: (details) {
+                          _handleJoystickChanged(details.x, details.y);
+                        },
+
+                        onStickDragEnd: _handleJoystickEnd,
+
+                        base: SizedBox.expand(
+                          child: CustomPaint(
+                            painter: JoystickPainter(
+                              appearance: JoystickAppearance(),
+                            ),
+                          ),
                         ),
-                      ),
-                    ),
+
+                        stick: JoystickStick(
+                          size: joystickSize * 0.22,
+                          decoration: JoystickStickDecoration(
+                            color: widget.isDisabled
+                                ? Palet.disabled
+                                : Palet.primaryAccent,
+                          ),
+                        ),
+                      );
+                    },
                   ),
                 ),
               ),
             ),
           ),
-        ],
-      ),
+        ),
+      ],
     );
   }
 }

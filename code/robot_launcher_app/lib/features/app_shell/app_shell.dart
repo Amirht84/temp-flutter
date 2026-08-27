@@ -125,7 +125,7 @@ class _MainPageState extends State<MainPage> {
         },
       ),
       body: Padding(
-        padding: EdgeInsets.symmetric(vertical: Dimensions.bodyPadding),
+        padding: EdgeInsets.all(Dimensions.bodyPadding),
         child: AnimatedSwitcher(
           duration: const Duration(milliseconds: 100),
           transitionBuilder: (child, animation) {

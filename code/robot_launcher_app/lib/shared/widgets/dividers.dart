@@ -11,7 +11,8 @@ class HorizonDivider extends StatelessWidget {
       child: Divider(
         color: Palet.divider,
         thickness: Dimensions.dividerNarrowThickness,
-        height: Dimensions.dividerSize)
+        height: Dimensions.dividerSize,
+      ),
     );
   }
 }
@@ -20,14 +21,27 @@ class VerticDivider extends StatelessWidget {
   const VerticDivider({super.key});
 
   @override
-  Widget build(BuildContext _){
+  Widget build(BuildContext _) {
     return FractionallySizedBox(
       heightFactor: Dimensions.dividerFactor,
       child: VerticalDivider(
         color: Palet.divider,
         thickness: Dimensions.dividerNarrowThickness,
-        width: Dimensions.dividerSize
-      ), 
+        width: Dimensions.dividerSize,
+      ),
+    );
+  }
+}
+
+class EmptyDivider extends StatelessWidget {
+  const EmptyDivider({super.key, this.isVertical = false});
+  final bool isVertical;
+
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      width: isVertical ? Dimensions.emptyDividerSize : null,
+      height: isVertical ? null : Dimensions.emptyDividerSize,
     );
   }
 }
