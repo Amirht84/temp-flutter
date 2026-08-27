@@ -104,7 +104,7 @@ class _MainPageState extends State<MainPage> {
       ),
       ManualPage(
         repo: _repo,
-        isDisabled: !_appShellViewModel.isConnected,
+        isDisabled: _appShellViewModel.isConnected,
         modeViewModel: _modeViewModel,
       ),
       ScenarioPage(

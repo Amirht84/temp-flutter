@@ -1,7 +1,7 @@
 import 'package:core/core.dart';
 import 'package:flutter/material.dart';
 
-enum PageState { home, play, smart, manual, scenario}
+enum PageState { home, play, smart, manual, scenario }
 
 class ModeViewModel extends ChangeNotifier {
   ModeViewModel(BleRepository repo)

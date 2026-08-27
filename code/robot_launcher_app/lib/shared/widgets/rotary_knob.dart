@@ -24,7 +24,6 @@ class RotaryKnobCard extends StatefulWidget {
   final ValueChanged<double> onChangedEnd;
   @override
   State<StatefulWidget> createState() => _RotaryKnobCardState();
-
 }
 
 class _RotaryKnobCardState extends State<RotaryKnobCard> {
@@ -52,33 +51,40 @@ class _RotaryKnobCardState extends State<RotaryKnobCard> {
                 minValue: -90,
                 startAngle: -180,
                 sweepAngle: 180,
-                onChangedEnd: widget.isDisabled 
-                  ? null 
-                  : (newValue) {
-                    widget.onChangedEnd(newValue);
-                    setState(() => value = 0);
-                  }
-                ,
-                onChanged: widget.isDisabled 
-                  ? (_){} 
-                  : (newValue) {
-                    widget.onChanged(newValue);
-                    setState(() => value = newValue);
-                  },
+                onChangedEnd: widget.isDisabled
+                    ? null
+                    : (newValue) {
+                        widget.onChangedEnd(newValue);
+                        setState(() => value = 0);
+                      },
+                onChanged: widget.isDisabled
+                    ? (_) {}
+                    : (newValue) {
+                        widget.onChanged(newValue);
+                        setState(() => value = newValue);
+                      },
                 style: RotaryKnobStyle(
                   normal: RotaryKnobAppearance(
                     shadowBlurRadius: 1,
                     majorDivisions: 4,
                     minorDivisions: 15,
-                    indicatorColor: widget.isDisabled ? Palet.disabled : Palet.primaryAccent,
-                    boundryColor: widget.isDisabled ? Palet.disabled : Palet.primaryAccent,
+                    indicatorColor: widget.isDisabled
+                        ? Palet.disabled
+                        : Palet.primaryAccent,
+                    boundryColor: widget.isDisabled
+                        ? Palet.disabled
+                        : Palet.primaryAccent,
                   ),
                   pressed: RotaryKnobAppearance(
                     shadowBlurRadius: widget.isDisabled ? 1 : 10,
                     majorDivisions: 4,
                     minorDivisions: 15,
-                    indicatorColor: widget.isDisabled ? Palet.disabled : Palet.primaryAccent,
-                    boundryColor: widget.isDisabled ? Palet.disabled : Palet.primaryAccent,
+                    indicatorColor: widget.isDisabled
+                        ? Palet.disabled
+                        : Palet.primaryAccent,
+                    boundryColor: widget.isDisabled
+                        ? Palet.disabled
+                        : Palet.primaryAccent,
                   ),
                 ),
               ),

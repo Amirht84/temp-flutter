@@ -15,32 +15,28 @@ class SmartPage extends StatefulWidget {
   @override
   State<StatefulWidget> createState() => _SmartPageState();
 }
-class _SmartPageState extends State<SmartPage> {
 
+class _SmartPageState extends State<SmartPage> {
   @override
   Widget build(BuildContext context) {
-        final stopButton = widget.modeViewModel.isStopped
-      ? GreenButton(
-          iconPath: AppAssets.start,
-          onPressed: () => setState(widget.modeViewModel.switchStop),
-          text: 'Start',
-          isDisabled: widget.isDisabled,
-      )
-      : RedButton(
-        text: 'Stop',
-        onPressed: () => setState(widget.modeViewModel.switchStop),
-        iconPath: AppAssets.stop,
-        isDisabled: widget.isDisabled,
-      );
+    final stopButton = widget.modeViewModel.isStopped
+        ? GreenButton(
+            iconPath: AppAssets.start,
+            onPressed: () => setState(widget.modeViewModel.switchStop),
+            text: 'Start',
+            isDisabled: widget.isDisabled,
+          )
+        : RedButton(
+            text: 'Stop',
+            onPressed: () => setState(widget.modeViewModel.switchStop),
+            iconPath: AppAssets.stop,
+            isDisabled: widget.isDisabled,
+          );
     return Column(
       children: [
-        Expanded(
-          child: Center(
-            child: Text("coming soon...")
-          )
-        ),
+        Expanded(child: Center(child: Text("coming soon..."))),
         stopButton,
-      ]
+      ],
     );
   }
 }

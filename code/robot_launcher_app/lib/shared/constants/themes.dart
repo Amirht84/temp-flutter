@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 
-
 // static const secondBackground = Color(0xFFFAF7F2);
 // static const secondBackground = Color(0xFFF8F1E7);
 // static const secondBackground = Color(0xFFFFF8EE);
@@ -48,7 +47,7 @@ abstract final class Dimensions {
   static const buttonFontSize = 18.0;
   static const buttonContextSize = 125.0;
   static const buttonHeight = 50.0;
-  static const buttonWidthFactor = 0.9;
+  static const buttonWidthFactor = 1.0;
   static const buttonPadding = 5.0;
 
   ////////////DIVIDERS////////////
@@ -56,6 +55,7 @@ abstract final class Dimensions {
   static const dividerNarrowThickness = 1.0;
   static const dividerWideThickness = 2.0;
   static const dividerFactor = 0.9;
+  static const emptyDividerSize = 10.0;
 
   ////////////Radio////////////
   static const radioMainCircleFactor = 0.8;

@@ -2,10 +2,7 @@ import 'package:robot_launcher_app/shared/constants/themes.dart';
 import 'package:flutter/material.dart';
 
 class TitleText extends StatelessWidget {
-  const TitleText(
-    this.data,
-    {super.key}
-  );
+  const TitleText(this.data, {super.key});
   final String data;
 
   @override
@@ -14,17 +11,14 @@ class TitleText extends StatelessWidget {
       data,
       style: TextStyle(
         fontWeight: FontWeight.bold,
-        fontSize: Dimensions.valueControlTitleSize
-      )
+        fontSize: Dimensions.valueControlTitleSize,
+      ),
     );
   }
 }
 
 class ValueText extends StatelessWidget {
-  const ValueText(
-    this.data,
-    {super.key,}
-  );
+  const ValueText(this.data, {super.key});
   final String data;
 
   @override
@@ -34,7 +28,7 @@ class ValueText extends StatelessWidget {
       style: TextStyle(
         fontWeight: FontWeight.bold,
         fontSize: Dimensions.valueControlValueSize,
-      )
+      ),
     );
   }
 }
