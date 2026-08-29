@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:robot_launcher_app/features/manual/manual_view_model.dart';
-import 'package:robot_launcher_app/shared/constants/themes.dart';
 import 'package:robot_launcher_app/shared/widgets/card.dart';
 import 'package:robot_launcher_app/shared/widgets/sliders.dart';
 import 'package:robot_launcher_app/shared/constants/dictie.dart';
