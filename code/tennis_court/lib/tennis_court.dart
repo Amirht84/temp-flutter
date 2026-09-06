@@ -1,5 +1,4 @@
-/// A Calculator.
-class Calculator {
-  /// Returns [value] plus 1.
-  int addOne(int value) => value + 1;
-}
+library tennis_court;
+
+export 'src/tennis_court.dart';
+export 'src/tennis_court_colors.dart';
