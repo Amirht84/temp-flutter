@@ -101,39 +101,6 @@ class TennisCourtLayout {
   }
 
   // -------------------------
-  // Boundary
-  // -------------------------
-
-  List<CourtLine> get boundaryLines {
-    final leftLine = CourtLine(
-      start: _fromCourtPos(0, 0),
-      end: _fromCourtPos(0, _courtHeight),
-    );
-
-    final bottomLine = CourtLine(
-      start: _fromCourtPos(0, _courtHeight),
-      end: _fromCourtPos(_courtWidth, _courtHeight),
-    );
-
-    final rightLine = CourtLine(
-      start: _fromCourtPos(_courtWidth, _courtHeight),
-      end: _fromCourtPos(_courtWidth, 0),
-    );
-
-    final topLine = CourtLine(
-      start: _fromCourtPos(_courtWidth, 0),
-      end: _fromCourtPos(0, 0),
-    );
-
-    return [
-      leftLine,
-      bottomLine,
-      rightLine,
-      topLine,
-    ];
-  }
-
-  // -------------------------
   // Singles side lines
   // -------------------------
 
@@ -173,22 +140,22 @@ class TennisCourtLayout {
   List<CourtLine> get serviceLines {
     final topLine = CourtLine(
       start: _fromCourtPos(
-        _tramLineWidth,
+        _tramLineWidth + TennisCourtConstants.lineWidth / 2,
         _noMansLandHeight,
       ),
       end: _fromCourtPos(
-        _courtWidth - _tramLineWidth,
+        _courtWidth - _tramLineWidth - TennisCourtConstants.lineWidth / 2,
         _noMansLandHeight,
       ),
     );
 
     final bottomLine = CourtLine(
       start: _fromCourtPos(
-        _tramLineWidth,
+        _tramLineWidth + TennisCourtConstants.lineWidth / 2,
         _courtHeight - _noMansLandHeight,
       ),
       end: _fromCourtPos(
-        _courtWidth - _tramLineWidth,
+        _courtWidth - _tramLineWidth - TennisCourtConstants.lineWidth / 2,
         _courtHeight - _noMansLandHeight,
       ),
     );
@@ -210,11 +177,11 @@ class TennisCourtLayout {
     return CourtLine(
       start: _fromCourtPos(
         centerX,
-        _noMansLandHeight,
+        _noMansLandHeight + TennisCourtConstants.lineWidth / 2,
       ),
       end: _fromCourtPos(
         centerX,
-        _courtHeight - _noMansLandHeight,
+        _courtHeight - _noMansLandHeight - TennisCourtConstants.lineWidth / 2,
       ),
     );
   }
