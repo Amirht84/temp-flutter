@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
-
 const zoneColor = Color(0x333B82F6);
+
 class Grid extends StatelessWidget {
   const Grid({
     super.key,
@@ -44,19 +44,11 @@ class Grid extends StatelessWidget {
     }
 
     if (rows != null && rows! <= 0) {
-      throw ArgumentError.value(
-        rows,
-        'rows',
-        'Must be greater than zero.',
-      );
+      throw ArgumentError.value(rows, 'rows', 'Must be greater than zero.');
     }
 
     if (cols != null && cols! <= 0) {
-      throw ArgumentError.value(
-        cols,
-        'cols',
-        'Must be greater than zero.',
-      );
+      throw ArgumentError.value(cols, 'cols', 'Must be greater than zero.');
     }
 
     if (heightFlex != null) {
@@ -79,11 +71,7 @@ class Grid extends StatelessWidget {
 
     if (widthFlex != null) {
       if (widthFlex!.isEmpty) {
-        throw ArgumentError.value(
-          widthFlex,
-          'widthFlex',
-          'Must not be empty.',
-        );
+        throw ArgumentError.value(widthFlex, 'widthFlex', 'Must not be empty.');
       }
 
       if (widthFlex!.any((value) => value <= 0)) {
@@ -116,10 +104,7 @@ class Grid extends StatelessWidget {
       child: Stack(
         children: [
           CustomPaint(
-            size: Size(
-              rect.width,
-              rect.height,
-            ),
+            size: Size(rect.width, rect.height),
             painter: _DashPainter(
               dashColor: Colors.white.withAlpha(75),
               rows: rows,
@@ -141,14 +126,11 @@ class Grid extends StatelessWidget {
                           // اینجا باید j باشد، نه i
                           flex: widthFlex?[j] ?? 1,
                           child: _CourtZone(
-                            isSelected:
-                                idMap[i][j] == selectedId,
+                            isSelected: idMap[i][j] == selectedId,
                             onPressed: () {
                               final id = idMap[i][j];
 
-                              onToggle(
-                                id == selectedId ? null : id,
-                              );
+                              onToggle(id == selectedId ? null : id);
                             },
                           ),
                         ),
@@ -178,12 +160,7 @@ class _DashPainter extends CustomPainter {
   final List<int>? widthFlex;
   final List<int>? heightFlex;
 
-  void _drawDashedLine(
-    Canvas canvas,
-    Offset start,
-    Offset end,
-    Paint paint,
-  ) {
+  void _drawDashedLine(Canvas canvas, Offset start, Offset end, Paint paint) {
     const dashLength = 8.0;
     const gapLength = 6.0;
 
@@ -205,11 +182,7 @@ class _DashPainter extends CustomPainter {
 
       final dashEnd = start + unit * dashEndDistance;
 
-      canvas.drawLine(
-        dashStart,
-        dashEnd,
-        paint,
-      );
+      canvas.drawLine(dashStart, dashEnd, paint);
 
       distance += dashLength + gapLength;
     }
@@ -223,17 +196,11 @@ class _DashPainter extends CustomPainter {
       ..strokeWidth = 1
       ..isAntiAlias = false;
 
-    final heightSum = heightFlex?.fold<int>(
-          0,
-          (sum, value) => sum + value,
-        ) ??
-        rows!;
+    final heightSum =
+        heightFlex?.fold<int>(0, (sum, value) => sum + value) ?? rows!;
 
-    final widthSum = widthFlex?.fold<int>(
-          0,
-          (sum, value) => sum + value,
-        ) ??
-        cols!;
+    final widthSum =
+        widthFlex?.fold<int>(0, (sum, value) => sum + value) ?? cols!;
 
     final heightUnit = size.height / heightSum;
     final widthUnit = size.width / widthSum;
@@ -242,43 +209,28 @@ class _DashPainter extends CustomPainter {
     final colsCount = widthFlex?.length ?? cols!;
 
     for (int i = 1; i < colsCount; i++) {
-      final multiple = widthFlex?.sublist(0, i).fold<int>(
-            0,
-            (sum, value) => sum + value,
-          ) ??
+      final multiple =
+          widthFlex?.sublist(0, i).fold<int>(0, (sum, value) => sum + value) ??
           i;
 
       final x = (widthUnit * multiple).roundToDouble();
 
-      _drawDashedLine(
-        canvas,
-        Offset(x, 0),
-        Offset(x, size.height),
-        linePaint,
-      );
+      _drawDashedLine(canvas, Offset(x, 0), Offset(x, size.height), linePaint);
     }
 
     // Horizontal lines
     final rowsCount = heightFlex?.length ?? rows!;
 
     for (int i = 1; i < rowsCount; i++) {
-      final multiple = heightFlex?.sublist(0, i).fold<int>(
-            0,
-            (sum, value) => sum + value,
-          ) ??
+      final multiple =
+          heightFlex?.sublist(0, i).fold<int>(0, (sum, value) => sum + value) ??
           i;
 
       final y = (heightUnit * multiple).roundToDouble();
 
-      _drawDashedLine(
-        canvas,
-        Offset(0, y),
-        Offset(size.width, y),
-        linePaint,
-      );
+      _drawDashedLine(canvas, Offset(0, y), Offset(size.width, y), linePaint);
     }
   }
-
 
   @override
   bool shouldRepaint(covariant _DashPainter oldDelegate) {
@@ -289,7 +241,6 @@ class _DashPainter extends CustomPainter {
         oldDelegate.heightFlex != heightFlex;
   }
 }
-
 
 class _CourtZone extends StatelessWidget {
   const _CourtZone({this.onPressed, this.isSelected = false});

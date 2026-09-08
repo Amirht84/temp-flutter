@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 
 class TennisCourtColors {
   const TennisCourtColors({
-    this.court = Colors.green ,
+    this.court = Colors.green,
     this.line = const Color(0x80FFFFFF),
     this.net = const Color(0xFFFFFFFF),
     this.boundry = const Color(0xFF000000),

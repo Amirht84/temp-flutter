@@ -2,21 +2,16 @@ import 'package:flutter/widgets.dart';
 import 'package:tennis_court/src/tennis_court_constants.dart';
 
 class CourtLine {
-  const CourtLine({
-    required this.start,
-    required this.end,
-  });
+  const CourtLine({required this.start, required this.end});
 
   final Offset start;
   final Offset end;
 }
 
 class TennisCourtLayout {
-  const TennisCourtLayout({
-    required double width,
-    required double height,
-  })  : _width = width,
-        _height = height;
+  const TennisCourtLayout({required double width, required double height})
+    : _width = width,
+      _height = height;
 
   final double _width;
   final double _height;
@@ -26,9 +21,7 @@ class TennisCourtLayout {
   // -------------------------
 
   double get _padding {
-    return _width *
-        TennisCourtConstants.paddingFlex /
-        100;
+    return _width * TennisCourtConstants.paddingFlex / 100;
   }
 
   double get _courtWidth {
@@ -64,10 +57,7 @@ class TennisCourtLayout {
   // -------------------------
 
   Offset _fromCourtPos(double x, double y) {
-    return Offset(
-      x + _padding,
-      y + _padding,
-    );
+    return Offset(x + _padding, y + _padding);
   }
 
   // -------------------------
@@ -75,12 +65,7 @@ class TennisCourtLayout {
   // -------------------------
 
   Rect get courtRect {
-    return Rect.fromLTWH(
-      _padding,
-      _padding,
-      _courtWidth,
-      _courtHeight,
-    );
+    return Rect.fromLTWH(_padding, _padding, _courtWidth, _courtHeight);
   }
 
   // -------------------------
@@ -89,14 +74,8 @@ class TennisCourtLayout {
 
   CourtLine get net {
     return CourtLine(
-      start: Offset(
-        _padding,
-        _height / 2,
-      ),
-      end: Offset(
-        _width - _padding,
-        _height / 2,
-      ),
+      start: Offset(_padding, _height / 2),
+      end: Offset(_width - _padding, _height / 2),
     );
   }
 
@@ -106,31 +85,16 @@ class TennisCourtLayout {
 
   List<CourtLine> get singlesSideLines {
     final leftLine = CourtLine(
-      start: _fromCourtPos(
-        _tramLineWidth,
-        0,
-      ),
-      end: _fromCourtPos(
-        _tramLineWidth,
-        _courtHeight,
-      ),
+      start: _fromCourtPos(_tramLineWidth, 0),
+      end: _fromCourtPos(_tramLineWidth, _courtHeight),
     );
 
     final rightLine = CourtLine(
-      start: _fromCourtPos(
-        _courtWidth - _tramLineWidth,
-        0,
-      ),
-      end: _fromCourtPos(
-        _courtWidth - _tramLineWidth,
-        _courtHeight,
-      ),
+      start: _fromCourtPos(_courtWidth - _tramLineWidth, 0),
+      end: _fromCourtPos(_courtWidth - _tramLineWidth, _courtHeight),
     );
 
-    return [
-      leftLine,
-      rightLine,
-    ];
+    return [leftLine, rightLine];
   }
 
   // -------------------------
@@ -160,10 +124,7 @@ class TennisCourtLayout {
       ),
     );
 
-    return [
-      topLine,
-      bottomLine,
-    ];
+    return [topLine, bottomLine];
   }
 
   // -------------------------
@@ -171,8 +132,7 @@ class TennisCourtLayout {
   // -------------------------
 
   CourtLine get centerServiceLine {
-    final centerX =
-        _tramLineWidth + _singlesWidth / 2;
+    final centerX = _tramLineWidth + _singlesWidth / 2;
 
     return CourtLine(
       start: _fromCourtPos(
@@ -191,12 +151,7 @@ class TennisCourtLayout {
   // -------------------------
 
   Rect get leftDoubles {
-    return Rect.fromLTWH(
-      _padding,
-      _padding,
-      _tramLineWidth,
-      _courtHeight / 2,
-    );
+    return Rect.fromLTWH(_padding, _padding, _tramLineWidth, _courtHeight / 2);
   }
 
   Rect get rightDoubles {
@@ -220,28 +175,31 @@ class TennisCourtLayout {
       _noMansLandHeight,
     );
   }
+
   List<int> get doublesHeightFlexList {
     return [
       TennisCourtConstants.halfNoMansLandHeightFlex,
       TennisCourtConstants.halfNoMansLandHeightFlex,
-      TennisCourtConstants.halfCourtHeightFlex - TennisCourtConstants.noMansLandHeightFlex,
+      TennisCourtConstants.halfCourtHeightFlex -
+          TennisCourtConstants.noMansLandHeightFlex,
     ];
   }
-  Rect get leftServiceCourt {
-  return Rect.fromLTWH(
-    _padding + _tramLineWidth,
-    _padding + _noMansLandHeight,
-    _singlesWidth / 2,
-    _courtHeight / 2 - _noMansLandHeight,
-  );
-}
 
-Rect get rightServiceCourt {
-  return Rect.fromLTWH(
-    _padding + _tramLineWidth + _singlesWidth / 2,
-    _padding + _noMansLandHeight,
-    _singlesWidth / 2,
-    _courtHeight / 2 - _noMansLandHeight,
-  );
-}
+  Rect get leftServiceCourt {
+    return Rect.fromLTWH(
+      _padding + _tramLineWidth,
+      _padding + _noMansLandHeight,
+      _singlesWidth / 2,
+      _courtHeight / 2 - _noMansLandHeight,
+    );
+  }
+
+  Rect get rightServiceCourt {
+    return Rect.fromLTWH(
+      _padding + _tramLineWidth + _singlesWidth / 2,
+      _padding + _noMansLandHeight,
+      _singlesWidth / 2,
+      _courtHeight / 2 - _noMansLandHeight,
+    );
+  }
 }
