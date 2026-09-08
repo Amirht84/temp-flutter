@@ -4,20 +4,12 @@ import 'tennis_court_colors.dart';
 import 'package:tennis_court/src/tennis_court_layout.dart';
 import 'tennis_court_painter.dart';
 
-class TennisCourt extends StatefulWidget {
-  const TennisCourt({super.key});
-  @override
-  State<StatefulWidget> createState() => _TennisCourtState();
-}
-
-class _TennisCourtState extends State<TennisCourt> {
-  late bool _isSelected;
-  @override
-  void initState() {
-    _isSelected = false;
-    super.initState();
-  }
-
+class TennisCourt extends StatelessWidget {
+  const TennisCourt({
+    super.key,
+    this.onToggleSelection,
+  });
+  final ValueChanged<int?>? onToggleSelection;
   @override
   Widget build(BuildContext context) {
     return SizedBox(
@@ -36,8 +28,8 @@ class _TennisCourtState extends State<TennisCourt> {
                 painter: TennisCourtPainter(
                   colors: TennisCourtColors(
                     court: Colors.green,
-                    line: Colors.white,
-                    net: Colors.grey,
+                    line: Colors.white.withValues(alpha: 0.5),
+                    net: Colors.white,
                     boundry: Colors.black,
                     shadow: Colors.black.withValues(alpha: 0.2),
                   ),
@@ -46,6 +38,7 @@ class _TennisCourtState extends State<TennisCourt> {
               ),
               _GridPack(
                 layout: layout,
+                onToggleSelection: onToggleSelection,
               )
             ],
           );
@@ -57,14 +50,19 @@ class _TennisCourtState extends State<TennisCourt> {
 class _GridPack extends StatefulWidget {
   const _GridPack({
     required this.layout,
+    this.onToggleSelection,
   });
+  final ValueChanged<int?>? onToggleSelection;
   final TennisCourtLayout layout;
   @override
   State<StatefulWidget> createState() => _GridPackState();
 }
 class _GridPackState extends State<_GridPack> {
   int? _selectedId;
-  void _onToggle(int? value) => setState(() => _selectedId = value);
+  void _onToggle(int? value){
+    setState(() => _selectedId = value);
+    widget.onToggleSelection?.call(value);
+  }
   @override
   Widget build(BuildContext context) {
     return Stack(
