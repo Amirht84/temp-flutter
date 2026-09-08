@@ -14,111 +14,101 @@ class TennisCourt extends StatelessWidget {
   final TennisCourtColors colors;
   @override
   Widget build(BuildContext context) {
-    return SizedBox(
-      height: 800,
-      width: 400,
-      child: LayoutBuilder(
-        builder: (context, constraints) {
-          final layout = TennisCourtLayout(
-            width: constraints.maxWidth,
-            height: constraints.maxHeight,
-          );
-          return Stack(
-            children: [
-              CustomPaint(
-                size: Size(constraints.maxWidth, constraints.maxHeight),
-                painter: TennisCourtPainter(
-                  colors: colors,
-                  layout: layout,
-                ),
-              ),
-              _GridPack(
-                layout: layout,
-                onToggleSelection: onToggleSelection,
-              )
-            ],
-          );
-        },
-      ),
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final layout = TennisCourtLayout(
+          width: constraints.maxWidth,
+          height: constraints.maxHeight,
+        );
+        return Stack(
+          children: [
+            CustomPaint(
+              size: Size(constraints.maxWidth, constraints.maxHeight),
+              painter: TennisCourtPainter(colors: colors, layout: layout),
+            ),
+            _GridPack(layout: layout, onToggleSelection: onToggleSelection),
+          ],
+        );
+      },
     );
   }
 }
+
 class _GridPack extends StatefulWidget {
-  const _GridPack({
-    required this.layout,
-    this.onToggleSelection,
-  });
+  const _GridPack({required this.layout, this.onToggleSelection});
   final ValueChanged<int?>? onToggleSelection;
   final TennisCourtLayout layout;
   @override
   State<StatefulWidget> createState() => _GridPackState();
 }
+
 class _GridPackState extends State<_GridPack> {
   int? _selectedId;
-  void _onToggle(int? value){
+  void _onToggle(int? value) {
     setState(() => _selectedId = value);
     widget.onToggleSelection?.call(value);
   }
+
   @override
   Widget build(BuildContext context) {
     return Stack(
       children: [
-              Grid(
-                cols: 4,
-                rows: 2,
-                rect: widget.layout.noMansLand,
-                idMap: [
-                  [2, 3, 4, 5],
-                  [8, 9, 10, 11],
-                ],
-                onToggle: _onToggle,
-                selectedId: _selectedId,
-              ),
-              Grid(
-                cols: 1,
-                heightFlex: widget.layout.doublesHeightFlexList,
-                rect: widget.layout.rightDoubles,
-                idMap: [
-                  [6],
-                  [12],
-                  [18],
-                ],
-                onToggle: _onToggle,
-                selectedId: _selectedId,
-              ),
-              Grid(
-                cols: 1,
-                heightFlex: widget.layout.doublesHeightFlexList,
-                rect: widget.layout.leftDoubles,
-                idMap: [
-                  [1],
-                  [7],
-                  [13]
-                ],
-                onToggle: _onToggle,
-                selectedId: _selectedId,
-              ),
-              Grid(
-                cols: 2,
-                rows: 1,
-                rect: widget.layout.leftServiceCourt,
-                idMap: [
-                  [14, 15]
-                ],
-                onToggle: _onToggle,
-                selectedId: _selectedId,
-              ),
-              Grid(
-                cols: 2,
-                rows: 1,
-                rect: widget.layout.rightServiceCourt,
-                idMap: [
-                  [16, 17]
-                ],
-                onToggle: _onToggle,
-                selectedId: _selectedId,
-              ),
-      ]
+        Grid(
+          cols: 4,
+          rows: 2,
+          rect: widget.layout.noMansLand,
+          idMap: [
+            [2, 3, 4, 5],
+            [8, 9, 10, 11],
+          ],
+          onToggle: _onToggle,
+          selectedId: _selectedId,
+        ),
+        Grid(
+          cols: 1,
+          heightFlex: widget.layout.doublesHeightFlexList,
+          rect: widget.layout.rightDoubles,
+          idMap: [
+            [6],
+            [12],
+            [18],
+          ],
+          onToggle: _onToggle,
+          selectedId: _selectedId,
+        ),
+        Grid(
+          cols: 1,
+          heightFlex: widget.layout.doublesHeightFlexList,
+          rect: widget.layout.leftDoubles,
+          idMap: [
+            [1],
+            [7],
+            [13],
+          ],
+          onToggle: _onToggle,
+          selectedId: _selectedId,
+        ),
+        Grid(
+          cols: 2,
+          rows: 1,
+          rect: widget.layout.leftServiceCourt,
+          idMap: [
+            [14, 15],
+          ],
+          onToggle: _onToggle,
+          selectedId: _selectedId,
+        ),
+        Grid(
+          cols: 2,
+          rows: 1,
+          rect: widget.layout.rightServiceCourt,
+          idMap: [
+            [16, 17],
+          ],
+          onToggle: _onToggle,
+          selectedId: _selectedId,
+        ),
+      ],
     );
   }
 }
