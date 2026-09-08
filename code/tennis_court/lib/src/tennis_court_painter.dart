@@ -24,7 +24,8 @@ class TennisCourtPainter extends CustomPainter {
     final linePaint = Paint()
       ..color = colors.line
       ..strokeWidth = 4
-      ..style = PaintingStyle.stroke;
+      ..style = PaintingStyle.stroke
+      ..strokeCap = StrokeCap.butt;
 
     final netPaint = Paint()
       ..color = colors.net
