@@ -18,6 +18,8 @@ dependencies:
   flutter_joystick: ^0.2.2
   core:
     path: ../core
+  tennis_court:
+    path: ../tennis_court
 
 
 dev_dependencies:
