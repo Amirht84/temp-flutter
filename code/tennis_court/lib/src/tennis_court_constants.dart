@@ -6,5 +6,6 @@ abstract class TennisCourtConstants {
   static const halfCourtHeightFlex = 39;
   static const noMansLandHeightFlex = 18;
   static const halfNoMansLandHeightFlex = 9;
-  static const paddingFlex = 2;
+  static const paddingFlex = 0;
+  static const lineWidth = 4;
 }
