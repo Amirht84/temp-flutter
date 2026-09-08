@@ -8,8 +8,10 @@ class TennisCourt extends StatelessWidget {
   const TennisCourt({
     super.key,
     this.onToggleSelection,
+    this.colors = const TennisCourtColors(),
   });
   final ValueChanged<int?>? onToggleSelection;
+  final TennisCourtColors colors;
   @override
   Widget build(BuildContext context) {
     return SizedBox(
@@ -26,13 +28,7 @@ class TennisCourt extends StatelessWidget {
               CustomPaint(
                 size: Size(constraints.maxWidth, constraints.maxHeight),
                 painter: TennisCourtPainter(
-                  colors: TennisCourtColors(
-                    court: Colors.green,
-                    line: Colors.white.withValues(alpha: 0.5),
-                    net: Colors.white,
-                    boundry: Colors.black,
-                    shadow: Colors.black.withValues(alpha: 0.2),
-                  ),
+                  colors: colors,
                   layout: layout,
                 ),
               ),
