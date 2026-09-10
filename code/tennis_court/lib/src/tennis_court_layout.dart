@@ -9,27 +9,24 @@ class CourtLine {
 }
 
 class TennisCourtLayout {
-  const TennisCourtLayout({required double width, required double height})
+  const TennisCourtLayout({required double width, required double height, required this.padding})
     : _width = width,
       _height = height;
 
   final double _width;
   final double _height;
+  final EdgeInsets padding;
 
   // -------------------------
   // Overall dimensions
   // -------------------------
 
-  double get _padding {
-    return _width * TennisCourtConstants.paddingFlex / 100;
-  }
-
   double get _courtWidth {
-    return _width - 2 * _padding;
+    return _width - padding.left - padding.right;
   }
 
   double get _courtHeight {
-    return _height - 2 * _padding;
+    return _height - padding.top - padding.bottom;
   }
 
   // -------------------------
@@ -57,15 +54,26 @@ class TennisCourtLayout {
   // -------------------------
 
   Offset _fromCourtPos(double x, double y) {
-    return Offset(x + _padding, y + _padding);
+    return Offset(x + padding.left, y + padding.top);
   }
 
+  // -------------------------
+  // whole rect
+  // -------------------------
+  Rect get wholeRect {
+    return Rect.fromLTWH(
+      0,
+      0,
+      _width,
+      _height
+    );
+  }
   // -------------------------
   // Court
   // -------------------------
 
   Rect get courtRect {
-    return Rect.fromLTWH(_padding, _padding, _courtWidth, _courtHeight);
+    return Rect.fromLTWH(padding.left, padding.top, _courtWidth, _courtHeight);
   }
 
   // -------------------------
@@ -74,8 +82,8 @@ class TennisCourtLayout {
 
   CourtLine get net {
     return CourtLine(
-      start: Offset(_padding, _height / 2),
-      end: Offset(_width - _padding, _height / 2),
+      start: Offset(padding.left, padding.top + _courtHeight / 2),
+      end: Offset(_width - padding.right, padding.top + _courtHeight / 2),
     );
   }
 
@@ -151,13 +159,13 @@ class TennisCourtLayout {
   // -------------------------
 
   Rect get leftDoubles {
-    return Rect.fromLTWH(_padding, _padding, _tramLineWidth, _courtHeight / 2);
+    return Rect.fromLTWH(padding.left, padding.top, _tramLineWidth, _courtHeight / 2);
   }
 
   Rect get rightDoubles {
     return Rect.fromLTWH(
-      _padding + _tramLineWidth + _singlesWidth,
-      _padding,
+      padding.left + _tramLineWidth + _singlesWidth,
+      padding.top,
       _tramLineWidth,
       _courtHeight / 2,
     );
@@ -169,8 +177,8 @@ class TennisCourtLayout {
 
   Rect get noMansLand {
     return Rect.fromLTWH(
-      _padding + _tramLineWidth,
-      _padding,
+      padding.left + _tramLineWidth,
+      padding.top,
       _singlesWidth,
       _noMansLandHeight,
     );
@@ -187,8 +195,8 @@ class TennisCourtLayout {
 
   Rect get leftServiceCourt {
     return Rect.fromLTWH(
-      _padding + _tramLineWidth,
-      _padding + _noMansLandHeight,
+      padding.left + _tramLineWidth,
+      padding.top + _noMansLandHeight,
       _singlesWidth / 2,
       _courtHeight / 2 - _noMansLandHeight,
     );
@@ -196,8 +204,8 @@ class TennisCourtLayout {
 
   Rect get rightServiceCourt {
     return Rect.fromLTWH(
-      _padding + _tramLineWidth + _singlesWidth / 2,
-      _padding + _noMansLandHeight,
+      padding.left + _tramLineWidth + _singlesWidth / 2,
+      padding.top + _noMansLandHeight,
       _singlesWidth / 2,
       _courtHeight / 2 - _noMansLandHeight,
     );

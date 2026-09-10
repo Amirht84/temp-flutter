@@ -3,11 +3,11 @@ import 'package:tennis_court/src/tennis_court_colors.dart';
 import 'package:tennis_court/src/tennis_court_layout.dart';
 
 class TennisCourtPainter extends CustomPainter {
-  const TennisCourtPainter({required this.colors, required this.layout});
+  const TennisCourtPainter({required this.colors, required this.layout, this.padding = const EdgeInsetsGeometry.all(0)});
 
   final TennisCourtLayout layout;
   final TennisCourtColors colors;
-
+  final EdgeInsetsGeometry padding;
   @override
   void paint(Canvas canvas, Size size) {
     final netShadowPaint = Paint()
@@ -42,7 +42,7 @@ class TennisCourtPainter extends CustomPainter {
       canvas.drawLine(line.start, line.end, paint);
     }
 
-    canvas.drawRect(layout.courtRect, courtPaint);
+    canvas.drawRect(layout.wholeRect, courtPaint);
 
     for (final line in layout.serviceLines) {
       drawLine(line, linePaint);

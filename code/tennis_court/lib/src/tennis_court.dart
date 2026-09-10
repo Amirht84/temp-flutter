@@ -19,6 +19,7 @@ class TennisCourt extends StatelessWidget {
         final layout = TennisCourtLayout(
           width: constraints.maxWidth,
           height: constraints.maxHeight,
+          padding: EdgeInsets.all(10),
         );
         return Stack(
           children: [
