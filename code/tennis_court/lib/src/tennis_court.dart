@@ -27,7 +27,7 @@ class TennisCourt extends StatelessWidget {
               size: Size(constraints.maxWidth, constraints.maxHeight),
               painter: TennisCourtPainter(colors: colors, layout: layout),
             ),
-            _GridPack(layout: layout, onToggleSelection: onToggleSelection),
+            _GridPack(layout: layout, onToggleSelection: onToggleSelection, colors: colors),
           ],
         );
       },
@@ -36,9 +36,10 @@ class TennisCourt extends StatelessWidget {
 }
 
 class _GridPack extends StatefulWidget {
-  const _GridPack({required this.layout, this.onToggleSelection});
+  const _GridPack({required this.layout, this.onToggleSelection, required this.colors});
   final ValueChanged<int?>? onToggleSelection;
   final TennisCourtLayout layout;
+  final TennisCourtColors colors;
   @override
   State<StatefulWidget> createState() => _GridPackState();
 }
@@ -62,6 +63,7 @@ class _GridPackState extends State<_GridPack> {
             [2, 3, 4, 5],
             [8, 9, 10, 11],
           ],
+          colors: widget.colors,
           onToggle: _onToggle,
           selectedId: _selectedId,
         ),
@@ -74,6 +76,7 @@ class _GridPackState extends State<_GridPack> {
             [12],
             [18],
           ],
+          colors: widget.colors,
           onToggle: _onToggle,
           selectedId: _selectedId,
         ),
@@ -86,6 +89,7 @@ class _GridPackState extends State<_GridPack> {
             [7],
             [13],
           ],
+          colors: widget.colors,
           onToggle: _onToggle,
           selectedId: _selectedId,
         ),
@@ -96,6 +100,7 @@ class _GridPackState extends State<_GridPack> {
           idMap: [
             [14, 15],
           ],
+          colors: widget.colors,
           onToggle: _onToggle,
           selectedId: _selectedId,
         ),
@@ -106,6 +111,7 @@ class _GridPackState extends State<_GridPack> {
           idMap: [
             [16, 17],
           ],
+          colors: widget.colors,
           onToggle: _onToggle,
           selectedId: _selectedId,
         ),

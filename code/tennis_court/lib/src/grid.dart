@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:tennis_court/src/tennis_court_colors.dart';
 
-const zoneColor = Color(0x333B82F6);
 
 class Grid extends StatelessWidget {
   const Grid({
@@ -13,6 +13,7 @@ class Grid extends StatelessWidget {
     required this.idMap,
     required this.onToggle,
     this.selectedId,
+    required this.colors,
   });
 
   final int? cols;
@@ -23,7 +24,8 @@ class Grid extends StatelessWidget {
   final List<List<int>> idMap;
   final int? selectedId;
   final ValueChanged<int?> onToggle;
-
+  final TennisCourtColors colors;
+  
   void _validate() {
     final hasRows = rows != null;
     final hasHeightFlex = heightFlex != null;
@@ -106,7 +108,7 @@ class Grid extends StatelessWidget {
           CustomPaint(
             size: Size(rect.width, rect.height),
             painter: _DashPainter(
-              dashColor: Colors.white.withAlpha(75),
+              dashColor: colors.dash,
               rows: rows,
               cols: cols,
               heightFlex: heightFlex,
@@ -123,10 +125,10 @@ class Grid extends StatelessWidget {
                     children: [
                       for (int j = 0; j < _colsCount; j++)
                         Expanded(
-                          // اینجا باید j باشد، نه i
                           flex: widthFlex?[j] ?? 1,
                           child: _CourtZone(
                             isSelected: idMap[i][j] == selectedId,
+                            selected: colors.selected,
                             onPressed: () {
                               final id = idMap[i][j];
 
@@ -243,9 +245,10 @@ class _DashPainter extends CustomPainter {
 }
 
 class _CourtZone extends StatelessWidget {
-  const _CourtZone({this.onPressed, this.isSelected = false});
+  const _CourtZone({this.onPressed, this.isSelected = false, required this.selected});
   final VoidCallback? onPressed;
   final bool isSelected;
+  final Color selected;
 
   @override
   Widget build(BuildContext context) {
@@ -258,13 +261,13 @@ class _CourtZone extends StatelessWidget {
           RoundedRectangleBorder(borderRadius: BorderRadius.zero),
         ),
         backgroundColor: WidgetStatePropertyAll(
-          isSelected ? zoneColor : Colors.transparent,
+          isSelected ? selected : Colors.transparent,
         ),
         shadowColor: const WidgetStatePropertyAll(Colors.transparent),
         elevation: WidgetStatePropertyAll(0),
         overlayColor: WidgetStateProperty.resolveWith((states) {
           if (states.contains(WidgetState.pressed)) {
-            return zoneColor;
+            return selected;
           }
           return Colors.transparent;
         }),
