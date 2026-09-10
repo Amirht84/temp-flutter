@@ -93,13 +93,13 @@ class TennisCourtLayout {
 
   List<CourtLine> get singlesSideLines {
     final leftLine = CourtLine(
-      start: _fromCourtPos(_tramLineWidth, 0),
-      end: _fromCourtPos(_tramLineWidth, _courtHeight),
+      start: _fromCourtPos(_tramLineWidth, TennisCourtConstants.lineWidth / 2),
+      end: _fromCourtPos(_tramLineWidth, _courtHeight - TennisCourtConstants.lineWidth / 2),
     );
 
     final rightLine = CourtLine(
-      start: _fromCourtPos(_courtWidth - _tramLineWidth, 0),
-      end: _fromCourtPos(_courtWidth - _tramLineWidth, _courtHeight),
+      start: _fromCourtPos(_courtWidth - _tramLineWidth, TennisCourtConstants.lineWidth / 2),
+      end: _fromCourtPos(_courtWidth - _tramLineWidth, _courtHeight - TennisCourtConstants.lineWidth / 2),
     );
 
     return [leftLine, rightLine];
