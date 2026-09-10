@@ -15,7 +15,9 @@ class MyApp extends StatelessWidget {
       title: 'Flutter Demo',
       home: Scaffold(
         body: Center(
-          child: SizedBox(width: 300, height: 500, child: TennisCourt()),
+          child: SizedBox(width: 300, height: 500, child: TennisCourt(
+            padding: EdgeInsets.symmetric(horizontal: 10, vertical: 20)
+          )),
         ),
       ),
     );
