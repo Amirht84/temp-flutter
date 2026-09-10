@@ -9,9 +9,11 @@ class TennisCourt extends StatelessWidget {
     super.key,
     this.onToggleSelection,
     this.colors = const TennisCourtColors(),
+    this.padding = const EdgeInsets.all(0),
   });
   final ValueChanged<int?>? onToggleSelection;
   final TennisCourtColors colors;
+  final EdgeInsets padding;
   @override
   Widget build(BuildContext context) {
     return LayoutBuilder(
@@ -19,7 +21,7 @@ class TennisCourt extends StatelessWidget {
         final layout = TennisCourtLayout(
           width: constraints.maxWidth,
           height: constraints.maxHeight,
-          padding: EdgeInsets.all(10),
+          padding: padding,
         );
         return Stack(
           children: [
