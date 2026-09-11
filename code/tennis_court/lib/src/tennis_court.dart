@@ -10,10 +10,12 @@ class TennisCourt extends StatelessWidget {
     this.onToggleSelection,
     this.colors = const TennisCourtColors(),
     this.padding = const EdgeInsets.all(0),
+    this.borderRadius = BorderRadius.zero,
   });
   final ValueChanged<int?>? onToggleSelection;
   final TennisCourtColors colors;
   final EdgeInsets padding;
+  final BorderRadius borderRadius;
   @override
   Widget build(BuildContext context) {
     return LayoutBuilder(
@@ -27,7 +29,7 @@ class TennisCourt extends StatelessWidget {
           children: [
             CustomPaint(
               size: Size(constraints.maxWidth, constraints.maxHeight),
-              painter: TennisCourtPainter(colors: colors, layout: layout),
+              painter: TennisCourtPainter(colors: colors, layout: layout, borderRadius: borderRadius),
             ),
             _GridPack(layout: layout, onToggleSelection: onToggleSelection, colors: colors),
           ],
