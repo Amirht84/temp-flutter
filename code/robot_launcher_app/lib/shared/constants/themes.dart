@@ -17,7 +17,7 @@ abstract final class Palet {
   static const secondBackground = Color(0xFFE8F3EC);
   static const cards = Color(0xFFFFFFFF);
   static const secondaryPanels = Color(0xFFF2F4F7);
-  static const border = Color(0xFFDDE2E8);
+  static const border = Color(0xFFB8BEC6);
   static const divider = Color(0xFFCED4DB);
   static const primaryText = Color(0xFF1F2937);
   static const secondaryText = Color(0xFF6B7280);
@@ -44,11 +44,14 @@ abstract final class Dimensions {
 
   ////////////BUTTONS////////////
   static const buttonCurve = 14.0;
-  static const buttonFontSize = 18.0;
+  static const buttonNormalFontSize = 18.0;
+  static const buttonSelectionFontSize = 10.0;
   static const buttonContextSize = 125.0;
-  static const buttonHeight = 50.0;
+  static const buttonNormalHeight = 50.0;
+  static const buttonSelectionHeight = 70.0;
   static const buttonWidthFactor = 1.0;
   static const buttonPadding = 5.0;
+  static const buttonSvgHeight = 35.0;
 
   ////////////DIVIDERS////////////
   static const dividerSize = 30.0;
@@ -66,4 +69,10 @@ abstract final class Dimensions {
   static const radioArmThickness = 7.0;
 
   static const titleContextSize = 10.0;
+
+
+  //////////// CARD ////////////
+  static const cardTitleSize = 15.0;
+  static const circularRadius = 16.0;
+  static const cardPadding = 10.0;
 }
