@@ -1,7 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:robot_launcher_app/features/app_shell/mode_view_model.dart';
+import 'package:robot_launcher_app/features/play/widgets/spin_card.dart';
+import 'package:robot_launcher_app/features/play/widgets/tennis_court_card.dart';
+import 'package:robot_launcher_app/shared/constants/themes.dart';
 import 'package:robot_launcher_app/shared/widgets/buttons.dart';
 import 'package:robot_launcher_app/shared/constants/assets.dart';
+import 'package:robot_launcher_app/shared/widgets/dividers.dart';
 
 class PlayPage extends StatefulWidget {
   const PlayPage({
@@ -19,6 +23,7 @@ class PlayPage extends StatefulWidget {
 class _PlayPageState extends State<PlayPage> {
   @override
   Widget build(BuildContext context) {
+    final isDisabled = widget.isDisabled || widget.modeViewModel.isStopped;
     final stopButton = widget.modeViewModel.isStopped
         ? GreenButton(
             iconPath: AppAssets.start,
@@ -32,11 +37,30 @@ class _PlayPageState extends State<PlayPage> {
             iconPath: AppAssets.stop,
             isDisabled: widget.isDisabled,
           );
-    return Column(
+    return Padding(
+      padding: EdgeInsets.all(Dimensions.bodyPadding),
+      child: Column(
       children: [
-        Expanded(child: Center(child: Text("coming soon..."))),
+        Expanded(
+          child: SizedBox(
+              width: 300,
+              child: FractionallySizedBox(
+            heightFactor: 0.9,
+            child: TennisCourtCard(
+              isDisabled: isDisabled,
+            )
+            ))
+          ),
+      SpinCard(isDisabled: isDisabled,),
+      EmptyDivider(),
+      GreenButton(
+          isDisabled: isDisabled,
+          iconPath: AppAssets.tennisBall,
+          text: "Launch!",
+          onPressed: () {/* to be implemented */},
+        ),
         stopButton,
       ],
-    );
+    ));
   }
 }
