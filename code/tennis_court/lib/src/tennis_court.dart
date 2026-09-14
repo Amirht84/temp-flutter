@@ -52,7 +52,13 @@ class _GridPackState extends State<_GridPack> {
   int? _selectedId;
   void _onToggle(int? value) {
     setState(() => _selectedId = value);
-    widget.onToggleSelection?.call(value);
+    widget.onToggleSelection!.call(value);
+  }
+  
+  @override
+  void initState() {
+    _selectedId = null;
+    super.initState();
   }
 
   @override
@@ -68,7 +74,7 @@ class _GridPackState extends State<_GridPack> {
             [8, 9, 10, 11],
           ],
           colors: widget.colors,
-          onToggle: _onToggle,
+          onToggle: widget.onToggleSelection != null ? _onToggle : null,
           selectedId: _selectedId,
         ),
         Grid(
@@ -81,7 +87,7 @@ class _GridPackState extends State<_GridPack> {
             [18],
           ],
           colors: widget.colors,
-          onToggle: _onToggle,
+          onToggle: widget.onToggleSelection != null ? _onToggle : null,
           selectedId: _selectedId,
         ),
         Grid(
@@ -94,7 +100,7 @@ class _GridPackState extends State<_GridPack> {
             [13],
           ],
           colors: widget.colors,
-          onToggle: _onToggle,
+          onToggle: widget.onToggleSelection != null ? _onToggle : null,
           selectedId: _selectedId,
         ),
         Grid(
@@ -105,7 +111,7 @@ class _GridPackState extends State<_GridPack> {
             [14, 15],
           ],
           colors: widget.colors,
-          onToggle: _onToggle,
+          onToggle: widget.onToggleSelection != null ? _onToggle : null,
           selectedId: _selectedId,
         ),
         Grid(
@@ -116,7 +122,7 @@ class _GridPackState extends State<_GridPack> {
             [16, 17],
           ],
           colors: widget.colors,
-          onToggle: _onToggle,
+          onToggle: widget.onToggleSelection != null ? _onToggle : null,
           selectedId: _selectedId,
         ),
       ],

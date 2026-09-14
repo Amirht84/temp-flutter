@@ -23,7 +23,7 @@ class Grid extends StatelessWidget {
   final List<int>? heightFlex;
   final List<List<int>> idMap;
   final int? selectedId;
-  final ValueChanged<int?> onToggle;
+  final ValueChanged<int?>? onToggle;
   final TennisCourtColors colors;
   
   void _validate() {
@@ -129,10 +129,12 @@ class Grid extends StatelessWidget {
                           child: _CourtZone(
                             isSelected: idMap[i][j] == selectedId,
                             selected: colors.selected,
-                            onPressed: () {
-                              final id = idMap[i][j];
+                            onPressed: onToggle == null 
+                              ? null 
+                              : () {
+                                final id = idMap[i][j];
 
-                              onToggle(id == selectedId ? null : id);
+                                onToggle!.call(id == selectedId ? null : id);
                             },
                           ),
                         ),
