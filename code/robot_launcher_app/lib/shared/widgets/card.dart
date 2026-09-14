@@ -7,10 +7,10 @@ class AppCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.all(10),
+      padding: const EdgeInsets.all(Dimensions.cardPadding),
       decoration: BoxDecoration(
         color: Palet.cards,
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(Dimensions.circularRadius),
         boxShadow: [
           BoxShadow(blurRadius: 8, color: Palet.shadow, offset: Offset(0, 3)),
         ],
