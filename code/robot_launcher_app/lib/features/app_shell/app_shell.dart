@@ -96,7 +96,7 @@ class _MainPageState extends State<MainPage> {
       ),
       PlayPage(
         modeViewModel: _modeViewModel,
-        isDisabled: !_appShellViewModel.isConnected,
+        isDisabled: _appShellViewModel.isConnected,
       ),
       SmartPage(
         modeViewModel: _modeViewModel,
@@ -104,7 +104,7 @@ class _MainPageState extends State<MainPage> {
       ),
       ManualPage(
         repo: _repo,
-        isDisabled: _appShellViewModel.isConnected,
+        isDisabled: !_appShellViewModel.isConnected,
         modeViewModel: _modeViewModel,
       ),
       ScenarioPage(
@@ -124,9 +124,7 @@ class _MainPageState extends State<MainPage> {
           }
         },
       ),
-      body: Padding(
-        padding: EdgeInsets.all(Dimensions.bodyPadding),
-        child: AnimatedSwitcher(
+      body: AnimatedSwitcher(
           duration: const Duration(milliseconds: 100),
           transitionBuilder: (child, animation) {
             final offsetAnimation = Tween<Offset>(
@@ -138,7 +136,6 @@ class _MainPageState extends State<MainPage> {
           },
           child: pages[currentIndex],
         ),
-      ),
       bottomNavigationBar: BottomNavigationBarShell(
         currentIndex: currentIndex,
         onTap: (newIndex) => setState(() {

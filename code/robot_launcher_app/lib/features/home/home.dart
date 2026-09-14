@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:robot_launcher_app/features/app_shell/mode_view_model.dart';
+import 'package:robot_launcher_app/shared/constants/themes.dart';
 import 'package:robot_launcher_app/shared/widgets/buttons.dart';
 import 'package:robot_launcher_app/shared/constants/assets.dart';
 
@@ -32,11 +33,13 @@ class _HomePageState extends State<HomePage> {
             iconPath: AppAssets.stop,
             isDisabled: widget.isDisabled,
           );
-    return Column(
+    return Padding(
+      padding: EdgeInsets.all(Dimensions.bodyPadding),
+      child: Column(
       children: [
         Expanded(child: Center(child: Text("coming soon..."))),
         stopButton,
       ],
-    );
+    ));
   }
 }

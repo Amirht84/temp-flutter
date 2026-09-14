@@ -4,6 +4,7 @@ import 'package:robot_launcher_app/features/app_shell/mode_view_model.dart';
 import 'package:robot_launcher_app/features/manual/manual_view_model.dart';
 import 'package:robot_launcher_app/features/manual/widgets/rotary_card.dart';
 import 'package:robot_launcher_app/features/manual/widgets/sliders_partison.dart';
+import 'package:robot_launcher_app/shared/constants/themes.dart';
 import 'package:robot_launcher_app/shared/widgets/dividers.dart';
 import 'package:robot_launcher_app/shared/widgets/buttons.dart';
 import 'package:robot_launcher_app/shared/constants/assets.dart';
@@ -47,7 +48,9 @@ class _ManualPageState extends State<ManualPage> {
             isDisabled: widget.isDisabled,
           );
 
-    return Column(
+    return Padding(
+      padding: EdgeInsets.all(Dimensions.bodyPadding),
+      child: Column(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
         SlidersPartison(
@@ -70,6 +73,6 @@ class _ManualPageState extends State<ManualPage> {
         ),
         stopButton,
       ],
-    );
+    ));
   }
 }
