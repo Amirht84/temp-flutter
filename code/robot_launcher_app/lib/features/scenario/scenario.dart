@@ -36,16 +36,17 @@ class _ScenarioPageState extends State<ScenarioPage> {
     return Padding(
       padding: EdgeInsets.all(Dimensions.bodyPadding),
       child: Column(
-      children: [
-        Expanded(child: Center(child: Text("coming soon..."))),
-        GreenButton(
-          iconPath: AppAssets.random,
-          text: widget.modeViewModel.isRandom ? "Normal" : "Random",
-          onPressed: () => setState(widget.modeViewModel.switchRandom),
-          isDisabled: widget.isDisabled || widget.modeViewModel.isStopped,
-        ),
-        stopButton,
-      ],
-    ));
+        children: [
+          Expanded(child: Center(child: Text("coming soon..."))),
+          GreenButton(
+            iconPath: AppAssets.random,
+            text: widget.modeViewModel.isRandom ? "Normal" : "Random",
+            onPressed: () => setState(widget.modeViewModel.switchRandom),
+            isDisabled: widget.isDisabled || widget.modeViewModel.isStopped,
+          ),
+          stopButton,
+        ],
+      ),
+    );
   }
 }

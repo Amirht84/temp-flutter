@@ -36,10 +36,11 @@ class _SmartPageState extends State<SmartPage> {
     return Padding(
       padding: EdgeInsets.all(Dimensions.bodyPadding),
       child: Column(
-      children: [
-        Expanded(child: Center(child: Text("coming soon..."))),
-        stopButton,
-      ],
-    ));
+        children: [
+          Expanded(child: Center(child: Text("coming soon..."))),
+          stopButton,
+        ],
+      ),
+    );
   }
 }

@@ -4,10 +4,7 @@ import 'package:robot_launcher_app/shared/widgets/card.dart';
 import 'package:tennis_court/tennis_court.dart';
 
 class TennisCourtCard extends StatelessWidget {
-  const TennisCourtCard({
-    super.key,
-    this.isDisabled = false,
-  });
+  const TennisCourtCard({super.key, this.isDisabled = false});
   final bool isDisabled;
   @override
   Widget build(BuildContext context) {
@@ -16,9 +13,17 @@ class TennisCourtCard extends StatelessWidget {
         padding: EdgeInsets.all(15),
         borderRadius: BorderRadius.circular(Dimensions.circularRadius),
         colors: isDisabled
-          ? TennisCourtColors(court: Palet.disabled, selected: Colors.transparent)
-          : TennisCourtColors(),
-        onToggleSelection: isDisabled ? null :(value) {/** to be implemented */},
-      ));
+            ? TennisCourtColors(
+                court: Palet.disabled,
+                selected: Colors.transparent,
+              )
+            : TennisCourtColors(),
+        onToggleSelection: isDisabled
+            ? null
+            : (value) {
+                /** to be implemented */
+              },
+      ),
+    );
   }
 }

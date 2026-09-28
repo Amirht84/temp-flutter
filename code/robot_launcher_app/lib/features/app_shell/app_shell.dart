@@ -92,7 +92,7 @@ class _MainPageState extends State<MainPage> {
     final pages = [
       HomePage(
         modeViewModel: _modeViewModel,
-        isDisabled: !_appShellViewModel.isConnected,
+        isDisabled: _appShellViewModel.isConnected,
       ),
       PlayPage(
         modeViewModel: _modeViewModel,
@@ -100,16 +100,16 @@ class _MainPageState extends State<MainPage> {
       ),
       SmartPage(
         modeViewModel: _modeViewModel,
-        isDisabled: !_appShellViewModel.isConnected,
+        isDisabled: _appShellViewModel.isConnected,
       ),
       ManualPage(
         repo: _repo,
-        isDisabled: !_appShellViewModel.isConnected,
+        isDisabled: _appShellViewModel.isConnected,
         modeViewModel: _modeViewModel,
       ),
       ScenarioPage(
         modeViewModel: _modeViewModel,
-        isDisabled: !_appShellViewModel.isConnected,
+        isDisabled: _appShellViewModel.isConnected,
       ),
     ];
     return Scaffold(
@@ -125,17 +125,17 @@ class _MainPageState extends State<MainPage> {
         },
       ),
       body: AnimatedSwitcher(
-          duration: const Duration(milliseconds: 100),
-          transitionBuilder: (child, animation) {
-            final offsetAnimation = Tween<Offset>(
-              begin: const Offset(1, 0),
-              end: Offset.zero,
-            ).animate(animation);
+        duration: const Duration(milliseconds: 100),
+        transitionBuilder: (child, animation) {
+          final offsetAnimation = Tween<Offset>(
+            begin: const Offset(1, 0),
+            end: Offset.zero,
+          ).animate(animation);
 
-            return SlideTransition(position: offsetAnimation, child: child);
-          },
-          child: pages[currentIndex],
-        ),
+          return SlideTransition(position: offsetAnimation, child: child);
+        },
+        child: pages[currentIndex],
+      ),
       bottomNavigationBar: BottomNavigationBarShell(
         currentIndex: currentIndex,
         onTap: (newIndex) => setState(() {

@@ -2,10 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:robot_launcher_app/shared/constants/themes.dart';
 
-enum Mode {
-  normal,
-  selection,
-}
+enum Mode { normal, selection }
 
 class GreenButton extends StatelessWidget {
   const GreenButton({
@@ -109,6 +106,7 @@ class WhiteButton extends StatelessWidget {
     );
   }
 }
+
 class _ActionButton extends StatelessWidget {
   const _ActionButton({
     required this.text,
@@ -139,13 +137,13 @@ class _ActionButton extends StatelessWidget {
     final borderRadius = BorderRadius.circular(Dimensions.buttonCurve);
 
     return Padding(
-      padding: EdgeInsets.symmetric(
-        vertical: Dimensions.buttonPadding,
-      ),
+      padding: EdgeInsets.symmetric(vertical: Dimensions.buttonPadding),
       child: FractionallySizedBox(
         widthFactor: Dimensions.buttonWidthFactor,
         child: Container(
-          height: mode == .normal ? Dimensions.buttonNormalHeight : Dimensions.buttonSelectionHeight,
+          height: mode == .normal
+              ? Dimensions.buttonNormalHeight
+              : Dimensions.buttonSelectionHeight,
           decoration: BoxDecoration(
             borderRadius: borderRadius,
             boxShadow: isDisabled
@@ -161,12 +159,14 @@ class _ActionButton extends StatelessWidget {
           child: ElevatedButton(
             style: ElevatedButton.styleFrom(
               elevation: 0,
-              backgroundColor: isDisabled
-                  ? disabledColor
-                  : backgroundColor,
+              backgroundColor: isDisabled ? disabledColor : backgroundColor,
               textStyle: TextStyle(
-                fontWeight: mode == .normal ? FontWeight.bold : FontWeight.normal,
-                fontSize: mode == .normal ? Dimensions.buttonNormalFontSize : Dimensions.buttonSelectionFontSize,
+                fontWeight: mode == .normal
+                    ? FontWeight.bold
+                    : FontWeight.normal,
+                fontSize: mode == .normal
+                    ? Dimensions.buttonNormalFontSize
+                    : Dimensions.buttonSelectionFontSize,
               ),
               shape: RoundedRectangleBorder(
                 borderRadius: borderRadius,
@@ -179,9 +179,7 @@ class _ActionButton extends StatelessWidget {
             child: _ButtonContext(
               text: text,
               iconPath: iconPath,
-              color: isDisabled
-                  ? Palet.primaryText
-                  : contextColor,
+              color: isDisabled ? Palet.primaryText : contextColor,
               mode: mode,
             ),
           ),
@@ -209,23 +207,21 @@ class _ButtonContext extends StatelessWidget {
     return SizedBox(
       width: Dimensions.buttonContextSize,
       child: Container(
-        padding: EdgeInsets.symmetric(
-          vertical: mode == .selection ? 5 : 0
-        ),
+        padding: EdgeInsets.symmetric(vertical: mode == .selection ? 5 : 0),
         child: Flex(
-        direction: mode == .normal ? .horizontal : .vertical,
-        mainAxisAlignment: MainAxisAlignment.spaceAround,
-        children: [
-          if(iconPath != null )
-            SvgPicture.asset(
-              iconPath!,
-              height: mode == .selection ? Dimensions.buttonSvgHeight : null,
-              colorFilter: ColorFilter.mode(color, BlendMode.srcIn),
-            ),
-          Text(text, style: TextStyle(color: color)),
-        ],
+          direction: mode == .normal ? .horizontal : .vertical,
+          mainAxisAlignment: MainAxisAlignment.spaceAround,
+          children: [
+            if (iconPath != null)
+              SvgPicture.asset(
+                iconPath!,
+                height: mode == .selection ? Dimensions.buttonSvgHeight : null,
+                colorFilter: ColorFilter.mode(color, BlendMode.srcIn),
+              ),
+            Text(text, style: TextStyle(color: color)),
+          ],
         ),
-      )
+      ),
     );
   }
 }

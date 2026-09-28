@@ -51,28 +51,29 @@ class _ManualPageState extends State<ManualPage> {
     return Padding(
       padding: EdgeInsets.all(Dimensions.bodyPadding),
       child: Column(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: [
-        SlidersPartison(
-          manualViewModel: _manualViewModel,
-          isDisabled: isDisabled,
-        ),
-        EmptyDivider(),
-        Expanded(
-          child: RotaryCard(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          SlidersPartison(
             manualViewModel: _manualViewModel,
             isDisabled: isDisabled,
           ),
-        ),
-        EmptyDivider(),
-        GreenButton(
-          isDisabled: isDisabled,
-          iconPath: AppAssets.tennisBall,
-          text: "Launch!",
-          onPressed: () => _manualViewModel.launch(),
-        ),
-        stopButton,
-      ],
-    ));
+          EmptyDivider(),
+          Expanded(
+            child: RotaryCard(
+              manualViewModel: _manualViewModel,
+              isDisabled: isDisabled,
+            ),
+          ),
+          EmptyDivider(),
+          GreenButton(
+            isDisabled: isDisabled,
+            iconPath: AppAssets.tennisBall,
+            text: "Launch!",
+            onPressed: () => _manualViewModel.launch(),
+          ),
+          stopButton,
+        ],
+      ),
+    );
   }
 }
