@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:robot_launcher_app/features/app_shell/mode_view_model.dart';
 import 'package:robot_launcher_app/features/play/widgets/spin_card.dart';
+import 'package:robot_launcher_app/features/play/widgets/tab.dart';
 import 'package:robot_launcher_app/features/play/widgets/tennis_court_card.dart';
 import 'package:robot_launcher_app/shared/constants/themes.dart';
 import 'package:robot_launcher_app/shared/widgets/buttons.dart';
@@ -21,6 +22,21 @@ class PlayPage extends StatefulWidget {
 }
 
 class _PlayPageState extends State<PlayPage> {
+  late Position? _selectedTab;
+  void _onTabPressed(Position position){
+    setState((){
+    if(_selectedTab == position) {
+      _selectedTab = null;
+    }else {
+      _selectedTab = position;
+    }});
+  }
+  @override
+  void initState() {
+    _selectedTab = null;
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     final isDisabled = widget.isDisabled || widget.modeViewModel.isStopped;
@@ -38,29 +54,66 @@ class _PlayPageState extends State<PlayPage> {
             isDisabled: widget.isDisabled,
           );
     return Padding(
-      padding: EdgeInsets.all(Dimensions.bodyPadding),
+      padding: EdgeInsets.symmetric(vertical: Dimensions.bodyPadding),
       child: Column(
-      children: [
-        Expanded(
-          child: SizedBox(
-              width: 300,
-              child: FractionallySizedBox(
-            heightFactor: 0.9,
-            child: TennisCourtCard(
-              isDisabled: isDisabled,
-            )
-            ))
+        children: [
+          Expanded(
+            child: Stack(
+              fit: StackFit.expand,
+              children: [
+                Align(
+                  alignment: .center,
+                  child: SizedBox(
+                    width: 300,
+                    child: TennisCourtCard(isDisabled: isDisabled),
+                  ),
+                ),
+                Positioned(
+                  left: 0,
+                  top: 0,
+                  bottom: 0,
+                  child: AppTab(
+                    position: .left,
+                    isSelected: _selectedTab == .left,
+                    icon: Icons.smart_toy_sharp,
+                    onPressed: () => _onTabPressed(.left),
+                  ),
+                ),
+                Positioned(
+                  right: 0,
+                  top: 0,
+                  bottom: 0,
+                  child: AppTab(
+                    position: .right,
+                    isSelected: _selectedTab == .right,
+                    onPressed: () => _onTabPressed(.right),
+                    icon: Icons.account_tree
+                  ),
+                ),
+              ],
+            ),
           ),
-      SpinCard(isDisabled: isDisabled,),
-      EmptyDivider(),
-      GreenButton(
-          isDisabled: isDisabled,
-          iconPath: AppAssets.tennisBall,
-          text: "Launch!",
-          onPressed: () {/* to be implemented */},
-        ),
-        stopButton,
-      ],
-    ));
+          EmptyDivider(),
+          Padding(
+            padding: EdgeInsets.symmetric(horizontal: Dimensions.bodyPadding),
+            child: Column(
+              children: [
+                SpinCard(isDisabled: isDisabled),
+                EmptyDivider(),
+                GreenButton(
+                  isDisabled: isDisabled,
+                  iconPath: AppAssets.tennisBall,
+                  text: "Launch!",
+                  onPressed: () {
+                    /* to be implemented */
+                  },
+                ),
+                stopButton,
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
   }
 }
