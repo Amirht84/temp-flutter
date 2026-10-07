@@ -7,4 +7,5 @@ abstract final class AppAssets {
   static const topSpin = "assets/top_spin.svg";
   static const slice = "assets/slice.svg";
   static const kick = "assets/kick.svg";
+  static const newCross = "assets/newCross.svg";
 }
