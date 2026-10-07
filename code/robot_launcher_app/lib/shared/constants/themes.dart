@@ -36,43 +36,47 @@ abstract final class Dimensions {
   ////////////BODY////////////
   static const bodyPadding = 10.0;
   ////////////SLIDERS////////////
-  static const valueControlTitleSize = 15.0;
-  static const valueControlValueSize = 22.0;
-  static const valueControlFactor = 0.9;
-  static const sliderPadding = 10.0;
-  static const sliderBoundOffset = 25.0;
+  static const double valueControlTitleSize = 15.0;
+  static const double valueControlValueSize = 22.0;
+  static const double valueControlFactor = 0.9;
+  static const double sliderPadding = 10.0;
+  static const double sliderBoundOffset = 25.0;
 
   ////////////BUTTONS////////////
-  static const buttonCurve = 14.0;
-  static const buttonNormalFontSize = 18.0;
-  static const buttonSelectionFontSize = 10.0;
-  static const buttonContextSize = 125.0;
-  static const buttonNormalHeight = 50.0;
-  static const buttonSelectionHeight = 70.0;
-  static const buttonWidthFactor = 1.0;
-  static const buttonPadding = 5.0;
-  static const buttonSvgHeight = 35.0;
+  static const double buttonCurve = 14.0;
+  static const double buttonNormalFontSize = 18.0;
+  static const double buttonSelectionFontSize = 10.0;
+  static const double buttonContextSize = 125.0;
+  static const double buttonNormalHeight = 50.0;
+  static const double buttonSelectionHeight = 70.0;
+  static const double buttonWidthFactor = 1.0;
+  static const double buttonPadding = 5.0;
+  static const double buttonSvgHeight = 35.0;
+  static const double buttonEntryHeight = 50.0;
+  static const double buttonEntryTitleSize = 15;
+  static const double buttonEntryDescSize = 12.0;
+  static const double buttonEntryVerticPadding = 5.0;
+  static const double buttonEntryHorizonPadding = 10.0;
 
   ////////////DIVIDERS////////////
-  static const dividerSize = 30.0;
-  static const dividerNarrowThickness = 1.0;
-  static const dividerWideThickness = 2.0;
-  static const dividerFactor = 0.9;
-  static const emptyDividerSize = 10.0;
+  static const double dividerSize = 30.0;
+  static const double dividerNarrowThickness = 1.0;
+  static const double dividerWideThickness = 2.0;
+  static const double dividerFactor = 0.9;
+  static const double emptyDividerSize = 10.0;
 
   ////////////Radio////////////
-  static const radioMainCircleFactor = 0.8;
-  static const radioTickMarkFactor = 0.85;
-  static const radioNarrowTickMarkFactor = 0.95;
-  static const radioNarrowCircleFactor = 0.5;
-  static const radioInnerCircleFactor = 0.25;
-  static const radioArmThickness = 7.0;
+  static const double radioMainCircleFactor = 0.8;
+  static const double radioTickMarkFactor = 0.85;
+  static const double radioNarrowTickMarkFactor = 0.95;
+  static const double radioNarrowCircleFactor = 0.5;
+  static const double radioInnerCircleFactor = 0.25;
+  static const double radioArmThickness = 7.0;
 
-  static const titleContextSize = 10.0;
-
+  static const double titleContextSize = 10.0;
 
   //////////// CARD ////////////
-  static const cardTitleSize = 15.0;
-  static const circularRadius = 16.0;
-  static const cardPadding = 10.0;
+  static const double cardTitleSize = 15.0;
+  static const double circularRadius = 16.0;
+  static const double cardPadding = 10.0;
 }
