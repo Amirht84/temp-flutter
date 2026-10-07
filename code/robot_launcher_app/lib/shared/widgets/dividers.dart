@@ -2,7 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:robot_launcher_app/shared/constants/themes.dart';
 
 class HorizonDivider extends StatelessWidget {
-  const HorizonDivider({super.key});
+  const HorizonDivider({super.key, this.hasPadding = true});
+  final bool hasPadding;
 
   @override
   Widget build(BuildContext _) {
@@ -11,14 +12,15 @@ class HorizonDivider extends StatelessWidget {
       child: Divider(
         color: Palet.divider,
         thickness: Dimensions.dividerNarrowThickness,
-        height: Dimensions.dividerSize,
+        height: hasPadding ? Dimensions.dividerSize : null,
       ),
     );
   }
 }
 
 class VerticDivider extends StatelessWidget {
-  const VerticDivider({super.key});
+  const VerticDivider({super.key, this.hasPadding = true});
+  final bool hasPadding;
 
   @override
   Widget build(BuildContext _) {
@@ -27,7 +29,7 @@ class VerticDivider extends StatelessWidget {
       child: VerticalDivider(
         color: Palet.divider,
         thickness: Dimensions.dividerNarrowThickness,
-        width: Dimensions.dividerSize,
+        width: hasPadding ? Dimensions.dividerSize : null,
       ),
     );
   }
