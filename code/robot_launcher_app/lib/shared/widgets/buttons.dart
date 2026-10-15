@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:robot_launcher_app/shared/constants/themes.dart';
+import 'package:robot_launcher_app/shared/widgets/tab.dart';
 
 enum Mode { normal, selection }
 
-enum _Mode { normal, selection, entry }
+enum _Mode { normal, selection, entry, bobble }
 
 class GreenButton extends StatelessWidget {
   const GreenButton({
@@ -44,6 +45,37 @@ class GreenButton extends StatelessWidget {
         iconPath: iconPath,
         color: Palet.primaryText,
         mode: mode,
+      ),
+    );
+  }
+}
+
+class GreenBobble extends StatelessWidget {
+  const GreenBobble({
+    super.key,
+    required this.firstDesc,
+    required this.secondDesc,
+    required this.onPressed,
+    this.isDisabled = false,
+  });
+  final String firstDesc;
+  final String secondDesc;
+  final VoidCallback onPressed;
+  final bool isDisabled;
+
+  @override
+  Widget build(BuildContext context) {
+    return _ActionButton(
+      onPressed: onPressed,
+      backgroundColor: Palet.primaryAccent,
+      disabledColor: Palet.disabled,
+      shadowColor: Palet.shadow,
+      isDisabled: false,
+      mode: .bobble,
+      child: _BobbleContext(
+        firstDesc: firstDesc,
+        secondDesc: secondDesc,
+        contextColor: Palet.primaryText,
       ),
     );
   }
@@ -164,6 +196,38 @@ class WhiteEntry extends StatelessWidget {
   }
 }
 
+class WhiteBobble extends StatelessWidget {
+  const WhiteBobble({
+    super.key,
+    required this.firstDesc,
+    required this.secondDesc,
+    required this.onPressed,
+    this.isDisabled = false,
+  });
+  final String firstDesc;
+  final String secondDesc;
+  final VoidCallback onPressed;
+  final bool isDisabled;
+
+  @override
+  Widget build(BuildContext context) {
+    return _ActionButton(
+      onPressed: onPressed,
+      backgroundColor: Colors.white,
+      disabledColor: Palet.disabled,
+      borderColor: Palet.border,
+      shadowColor: Palet.shadow,
+      isDisabled: false,
+      mode: .bobble,
+      child: _BobbleContext(
+        firstDesc: firstDesc,
+        secondDesc: secondDesc,
+        contextColor: Palet.primaryText,
+      ),
+    );
+  }
+}
+
 class _ActionButton extends StatelessWidget {
   const _ActionButton({
     required this.onPressed,
@@ -188,45 +252,89 @@ class _ActionButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final borderRadius = BorderRadius.circular(Dimensions.buttonCurve);
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final maxWidth = constraints.maxWidth;
+        return Padding(
+          padding: EdgeInsets.symmetric(vertical: Dimensions.buttonPadding),
+          child: Container(
+            width: mode != .bobble
+                ? maxWidth * Dimensions.buttonWidthFactor
+                : null,
+            height: switch (mode) {
+              .normal => Dimensions.buttonNormalHeight,
+              .selection => Dimensions.buttonSelectionHeight,
+              .entry => Dimensions.buttonEntryHeight,
+              .bobble => null,
+            },
 
-    return Padding(
-      padding: EdgeInsets.symmetric(vertical: Dimensions.buttonPadding),
-      child: FractionallySizedBox(
-        widthFactor: Dimensions.buttonWidthFactor,
-        child: Container(
-          height: switch (mode) {
-            .normal => Dimensions.buttonNormalHeight,
-            .selection => Dimensions.buttonSelectionHeight,
-            .entry => Dimensions.buttonEntryHeight,
-          },
-          decoration: BoxDecoration(
-            borderRadius: borderRadius,
-            boxShadow: isDisabled
-                ? null
-                : [
-                    BoxShadow(
-                      color: shadowColor,
-                      blurRadius: 8,
-                      offset: Offset(0, 3),
-                    ),
-                  ],
-          ),
-          child: ElevatedButton(
-            style: ElevatedButton.styleFrom(
-              padding: EdgeInsets.zero,
-              elevation: 0,
-              backgroundColor: isDisabled ? disabledColor : backgroundColor,
-              shape: RoundedRectangleBorder(
-                borderRadius: borderRadius,
-                side: borderColor == null
-                    ? BorderSide.none
-                    : BorderSide(color: borderColor!),
-              ),
+            decoration: BoxDecoration(
+              borderRadius: borderRadius,
+              boxShadow: isDisabled
+                  ? null
+                  : [
+                      BoxShadow(
+                        color: shadowColor,
+                        blurRadius: 8,
+                        offset: Offset(0, 3),
+                      ),
+                    ],
             ),
-            onPressed: isDisabled ? null : onPressed,
-            child: child,
+            child: ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                padding: EdgeInsets.zero,
+                elevation: 0,
+                backgroundColor: isDisabled ? disabledColor : backgroundColor,
+                shape: RoundedRectangleBorder(
+                  borderRadius: borderRadius,
+                  side: borderColor == null
+                      ? BorderSide.none
+                      : BorderSide(color: borderColor!),
+                ),
+              ),
+              onPressed: isDisabled ? null : onPressed,
+              child: child,
+            ),
           ),
-        ),
+        );
+      },
+    );
+  }
+}
+
+const double bobbleVerticalPadding = 5;
+const double bobbleHorizonPadding = 5;
+
+class _BobbleContext extends StatelessWidget {
+  const _BobbleContext({
+    required this.firstDesc,
+    required this.secondDesc,
+    required this.contextColor,
+  });
+
+  final String firstDesc;
+  final String secondDesc;
+  final Color contextColor;
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: EdgeInsets.symmetric(
+        vertical: bobbleVerticalPadding,
+        horizontal: horizontalPadding,
+      ),
+      child: Column(
+        mainAxisSize: .min,
+        children: [
+          Text(
+            firstDesc,
+            style: TextStyle(color: contextColor, fontWeight: .bold),
+          ),
+          Text(
+            secondDesc,
+            style: TextStyle(color: contextColor, fontWeight: .bold),
+          ),
+        ],
       ),
     );
   }

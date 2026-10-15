@@ -5,6 +5,23 @@ import 'package:robot_launcher_app/shared/widgets/card.dart';
 import 'package:robot_launcher_app/shared/widgets/dividers.dart';
 import 'package:robot_launcher_app/shared/widgets/texts.dart';
 
+enum SpinType {
+  flat,
+  topSpin,
+  slice,
+  kick;
+
+  @override
+  String toString() {
+    return switch (this) {
+      .flat => 'Flat',
+      .topSpin => 'TopSpin',
+      .slice => 'Slice',
+      .kick => 'Kick',
+    };
+  }
+}
+
 class SpinCard extends StatefulWidget {
   const SpinCard({super.key, this.isDisabled = false});
   final bool isDisabled;
@@ -13,13 +30,18 @@ class SpinCard extends StatefulWidget {
 }
 
 class _SpinCardState extends State<SpinCard> {
-  int? selectedId;
-  void _onToggle(id) {
+  late SpinType selectedSpin;
+
+  @override
+  void initState() {
+    selectedSpin = .flat;
+    super.initState();
+  }
+
+  void _onToggle(SpinType spin) {
     setState(() {
-      if (selectedId == id) {
-        selectedId = null;
-      } else {
-        selectedId = id;
+      if (selectedSpin != spin) {
+        selectedSpin = spin;
       }
     });
   }
@@ -36,36 +58,36 @@ class _SpinCardState extends State<SpinCard> {
             children: [
               _SelectionButton(
                 text: "Flat",
-                isSelected: selectedId == 0,
+                isSelected: selectedSpin == .flat,
                 onToggleSelection: _onToggle,
-                id: 0,
+                spin: .flat,
                 iconPath: AppAssets.flat,
                 isDisabled: widget.isDisabled,
               ),
               EmptyDivider(isVertical: true),
               _SelectionButton(
                 text: "TopSpin",
-                isSelected: selectedId == 1,
+                isSelected: selectedSpin == .topSpin,
                 onToggleSelection: _onToggle,
-                id: 1,
+                spin: .topSpin,
                 iconPath: AppAssets.topSpin,
                 isDisabled: widget.isDisabled,
               ),
               EmptyDivider(isVertical: true),
               _SelectionButton(
                 text: "Slice",
-                isSelected: selectedId == 2,
+                isSelected: selectedSpin == .slice,
                 onToggleSelection: _onToggle,
-                id: 2,
+                spin: .slice,
                 iconPath: AppAssets.slice,
                 isDisabled: widget.isDisabled,
               ),
               EmptyDivider(isVertical: true),
               _SelectionButton(
                 text: "Kick",
-                isSelected: selectedId == 3,
+                isSelected: selectedSpin == .kick,
                 onToggleSelection: _onToggle,
-                id: 3,
+                spin: .kick,
                 iconPath: AppAssets.kick,
                 isDisabled: widget.isDisabled,
               ),
@@ -82,14 +104,14 @@ class _SelectionButton extends StatelessWidget {
     required this.text,
     required this.isSelected,
     required this.onToggleSelection,
-    required this.id,
+    required this.spin,
     required this.iconPath,
     this.isDisabled = false,
   });
   final String text;
   final bool isSelected;
-  final ValueChanged<int> onToggleSelection;
-  final int id;
+  final ValueChanged<SpinType> onToggleSelection;
+  final SpinType spin;
   final String iconPath;
   final bool isDisabled;
 
@@ -101,7 +123,7 @@ class _SelectionButton extends StatelessWidget {
               text: text,
               isDisabled: isDisabled,
               onPressed: () {
-                onToggleSelection(id);
+                onToggleSelection(spin);
               },
               hasShadow: false,
               mode: .selection,
@@ -111,7 +133,7 @@ class _SelectionButton extends StatelessWidget {
               text: text,
               isDisabled: isDisabled,
               onPressed: () {
-                onToggleSelection(id);
+                onToggleSelection(spin);
               },
               hasShadow: false,
               mode: .selection,

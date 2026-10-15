@@ -4,9 +4,11 @@ import 'package:robot_launcher_app/features/play/widgets/delay_slider_card.dart'
 import 'package:robot_launcher_app/features/play/widgets/spin_card.dart';
 import 'package:robot_launcher_app/features/play/widgets/tennis_court_card.dart';
 import 'package:robot_launcher_app/features/play/widgets/text_field_card.dart';
+import 'package:robot_launcher_app/features/play/widgets/time_line_list_view.dart';
 import 'package:robot_launcher_app/shared/constants/assets.dart';
 import 'package:robot_launcher_app/shared/constants/themes.dart';
 import 'package:robot_launcher_app/shared/widgets/buttons.dart';
+import 'package:robot_launcher_app/shared/widgets/card.dart';
 import 'package:robot_launcher_app/shared/widgets/dividers.dart';
 import 'package:robot_launcher_app/shared/widgets/tab.dart';
 
@@ -41,7 +43,7 @@ class _ScenarioBuilderPageState extends State<ScenarioBuilderPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       resizeToAvoidBottomInset: false,
-      appBar: AppBar(backgroundColor: Palet.secondBackground),
+      appBar: AppBar(backgroundColor: Palet.secondBackground, title: Text('Scenario Builder'), centerTitle:  true,),
       body: PopScope(
         canPop: _selectedTab == null,
         onPopInvokedWithResult: (didPop, result) {
@@ -108,45 +110,44 @@ class _ScenarioBuilderPageState extends State<ScenarioBuilderPage> {
                     EmptyDivider(),
                     DelaySliderCard(onChangedEnd: (_) {}),
                     EmptyDivider(),
-                  ],
-                ),
+
+             AppCard(child: Container(
+        height: 160,
+//        padding: EdgeInsets.only(top: 5, left: Dimensions.cardPadding, right: Dimensions.cardPadding),
+
+        child: Column(
+          mainAxisSize: .min,
+          children: [
+          TimeLineListView(),
+          HorizonDivider(hasPadding: false,),
+          Row(
+          mainAxisAlignment: .spaceEvenly,
+          crossAxisAlignment: .start,
+          children: [
+            SizedBox(
+              width: buttonWidth,
+              child: RedButton(text: 'Delete Shot', onPressed: () {}),
+            ),
+
+            SizedBox(
+              width: buttonWidth,
+              child: GreenButton(
+                text: 'New Shot',
+                onPressed: () {},
+                iconPath: AppAssets.newCross,
               ),
+            ),
+          ],
+        ),])
+      ),),
             ],
           ),
         ),
-      ),
-      bottomNavigationBar: Container(
-          height: 100,
-          padding: EdgeInsets.only(top: 5),
-          decoration: BoxDecoration(
-            color: Palet.cards,
-            borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
-            
-            boxShadow: [
-          BoxShadow(blurRadius: 8, color: Palet.shadow, offset: Offset(0, 3)),
-
-]
-          ),
-          child: Row(
-            mainAxisAlignment: .spaceEvenly,
-            crossAxisAlignment: .start,
-            children: [
-              SizedBox(
-                width: buttonWidth,
-                child: RedButton(text: 'Delete Shot', onPressed: () {}),
-              ),
-
-              SizedBox(
-                width: buttonWidth,
-                child: GreenButton(
-                  text: 'New Shot',
-                  onPressed: () {},
-                  iconPath: AppAssets.newCross,
+        EmptyDivider(),
+        EmptyDivider(),
+                     ],
                 ),
-              ),
-            ],
-          ),
-        ),
+              ),)
     );
   }
 }
