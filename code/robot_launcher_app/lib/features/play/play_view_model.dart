@@ -3,7 +3,6 @@ class ScenarioHeader {
     required this.title,
     required this.duration,
     required this.shots,
-
   });
   final String title;
   final Duration duration;
