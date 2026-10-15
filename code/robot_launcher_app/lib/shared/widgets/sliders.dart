@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:robot_launcher_app/shared/constants/themes.dart';
 import 'package:robot_launcher_app/shared/widgets/texts.dart';
 
+enum Mode { normal, titleHorizon }
+
 class FlexibleSlider extends StatefulWidget {
   const FlexibleSlider({
     super.key,
@@ -12,6 +14,7 @@ class FlexibleSlider extends StatefulWidget {
     this.isVertical = false,
     this.isDisabled = false,
     this.unit = "",
+    this.mode = .normal,
   });
 
   final double minValue;
@@ -21,6 +24,7 @@ class FlexibleSlider extends StatefulWidget {
   final String unit;
   final bool isDisabled;
   final ValueChanged<double> onChangedEnd;
+  final Mode mode;
 
   @override
   State<FlexibleSlider> createState() => _FlexibleSliderState();
@@ -50,12 +54,20 @@ class _FlexibleSliderState extends State<FlexibleSlider> {
       onChangedEnd: widget.onChangedEnd,
       unit: widget.unit,
     );
-
     return Column(
       mainAxisSize: widget.isVertical ? MainAxisSize.max : MainAxisSize.min,
       children: [
-        TitleText(widget.title),
-        ValueText('${value.toInt()}${widget.unit}'),
+        switch (widget.mode) {
+          .normal => Column(
+            children: [
+              TitleText(widget.title),
+              ValueText('${value.toInt()}${widget.unit}'),
+            ],
+          ),
+          .titleHorizon => TitleText(
+            '${widget.title}: ${value.toInt()}${widget.unit}',
+          ),
+        },
         widget.isVertical ? Expanded(child: slider) : slider,
       ],
     );
