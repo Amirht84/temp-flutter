@@ -3,7 +3,9 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:robot_launcher_app/shared/constants/themes.dart';
 
 enum Mode { normal, selection }
-enum _Mode {normal, selection, entry}
+
+enum _Mode { normal, selection, entry }
+
 class GreenButton extends StatelessWidget {
   const GreenButton({
     super.key,
@@ -32,7 +34,7 @@ class GreenButton extends StatelessWidget {
       backgroundColor: Palet.primaryAccent,
       disabledColor: Palet.disabled,
       shadowColor: hasShadow ? Palet.shadow : Colors.transparent,
-      mode: switch(mode){
+      mode: switch (mode) {
         .normal => .normal,
         .selection => .selection,
       },
@@ -73,7 +75,7 @@ class RedButton extends StatelessWidget {
       backgroundColor: Palet.error,
       disabledColor: Palet.disabled,
       shadowColor: hasShadow ? Palet.shadow : Colors.transparent,
-      mode: switch(mode) {
+      mode: switch (mode) {
         .normal => .normal,
         .selection => .selection,
       },
@@ -114,9 +116,9 @@ class WhiteButton extends StatelessWidget {
       disabledColor: Palet.disabled,
       borderColor: Palet.border,
       shadowColor: hasShadow ? Palet.shadow : Colors.transparent,
-      mode: switch(mode) {
+      mode: switch (mode) {
         .normal => .normal,
-        .selection => .selection
+        .selection => .selection,
       },
       child: _ButtonContext(
         text: text,
@@ -223,9 +225,9 @@ class _ActionButton extends StatelessWidget {
             ),
             onPressed: isDisabled ? null : onPressed,
             child: child,
-            ),
           ),
         ),
+      ),
     );
   }
 }
@@ -247,25 +249,41 @@ class _EntryContext extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-        padding: EdgeInsets.symmetric(vertical: Dimensions.buttonEntryVerticPadding, horizontal: Dimensions.buttonEntryHorizonPadding), ///////////////////// ATTENTION
-        child: Column(
-          children: [
-            Text(title,
+      padding: EdgeInsets.symmetric(
+        vertical: Dimensions.buttonEntryVerticPadding,
+        horizontal: Dimensions.buttonEntryHorizonPadding,
+      ), ///////////////////// ATTENTION
+      child: Column(
+        children: [
+          Text(
+            title,
             style: TextStyle(
               fontWeight: FontWeight.bold,
               fontSize: Dimensions.buttonEntryTitleSize,
               color: contextColor,
-            )),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(firstDesc,
-                style: TextStyle(color: constColor, fontSize: Dimensions.buttonEntryDescSize)),
-                Text(secondDesc, style: TextStyle(color: constColor, fontSize: Dimensions.buttonEntryDescSize)),
-              ]
-            )
-          ]
-        )
+            ),
+          ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                firstDesc,
+                style: TextStyle(
+                  color: constColor,
+                  fontSize: Dimensions.buttonEntryDescSize,
+                ),
+              ),
+              Text(
+                secondDesc,
+                style: TextStyle(
+                  color: constColor,
+                  fontSize: Dimensions.buttonEntryDescSize,
+                ),
+              ),
+            ],
+          ),
+        ],
+      ),
     );
   }
 }

@@ -2,9 +2,11 @@ import 'package:flutter/material.dart';
 import 'dart:math' as math;
 import 'package:robot_launcher_app/shared/constants/themes.dart';
 
+const double tabMargin = 5;
+const double verticalPadding = 5;
+const double horizontalPadding = 10;
 const double innerTabWidth = 200;
 const double outerTabWidth = 30;
-const double tabPadding = 5;
 const double tabStrokeWidth = 1;
 
 enum Position { left, right }
@@ -26,7 +28,7 @@ class AppTab extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: EdgeInsetsGeometry.symmetric(vertical: tabPadding),
+      padding: EdgeInsetsGeometry.symmetric(vertical: tabMargin),
       child: SizedBox(
         width: isSelected ? innerTabWidth + outerTabWidth : outerTabWidth,
         child: Transform.flip(
@@ -54,7 +56,7 @@ class AppTab extends StatelessWidget {
                     firstCurveFactor: 0.1,
                     secondCurveFactor: 0.1,
                     curveAngle: 80,
-                    curveHeight: 80
+                    curveHeight: 80,
                   ),
                 ),
               ),
@@ -66,14 +68,12 @@ class AppTab extends StatelessWidget {
                   flipX: position == .right,
                   child: GestureDetector(
                     onTap: onPressed,
-                    child: SizedBox
-                  (
-                    height: 20,
-                    width: 20,
-                    child: Icon(size: 20, icon,
+                    child: SizedBox(
+                      height: 20,
+                      width: 20,
+                      child: Icon(size: 20, icon),
+                    ),
                   ),
-                ),
-                )
                 ),
               ),
               Positioned(
@@ -81,10 +81,19 @@ class AppTab extends StatelessWidget {
                 top: 0,
                 bottom: 0,
                 left: 0,
-                child: isSelected ? Transform.flip(
-                  flipX: position == .right,
-                  child: child ?? Container()) : Container()
-              )
+                child: isSelected
+                    ? Transform.flip(
+                        flipX: position == .right,
+                        child: Padding(
+                          padding: EdgeInsets.symmetric(
+                            horizontal: horizontalPadding,
+                            vertical: verticalPadding,
+                          ),
+                          child: child ?? Container(),
+                        ),
+                      )
+                    : Container(),
+              ),
             ],
           ),
         ),
@@ -145,9 +154,11 @@ class _TabPainter extends CustomPainter {
   double get _capsuleWidth {
     return capsuleFlex * outerTabWidth / (capsuleFlex + curveFlex);
   }
+
   double get _curveWidth {
     return curveFlex * outerTabWidth / (capsuleFlex + curveFlex);
   }
+
   @override
   void paint(Canvas canvas, Size size) {
     final path = _TabPath(
